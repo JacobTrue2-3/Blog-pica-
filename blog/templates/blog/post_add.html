@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+
+{% block title %}{{ post.title }}{% endblock title %}
+
+{% block content %}
+
+    <h1>Создать новый пост</h1>
+
+    <form method="post" action="{% url 'post_add' %}">
+        {% csrf_token %}
+        <div> 
+            <label for="titleInput">Заголовок поста:</label>
+            <input id="titleInput" type="text" name="title" placeloder="Максимальная длина 200 символов" required maxlength="200">
+        </div>
+        <div> 
+            <label for="textInput">Текст поста:</label>
+            <textarea id="textInput" name="text"></textarea>
+        </div>
+        
+        <button type="submit">Сохранить</button>
+        {% comment %} <input type="submit" value="Сохранить"> {% endcomment %}
+    </form>
+
+{% endblock content %}
