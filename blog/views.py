@@ -1,5 +1,4 @@
 from django.shortcuts import render, get_object_or_404, redirect
-
 from .models import Post
 
 
@@ -23,8 +22,5 @@ def get_post_add(request):
         return render(request, 'blog/post_add.html')
     
     if request.method == 'POST':
-        title_from_user = request.POST.get('title')
-        text_from_user = request.POST.get('text')
-
-        post = Post.objects.create(title=title_from_user, text=text_from_user)
+        post = Post.objects.create(title=request.POST.get('title'), text=request.POST.get('text'))
         return redirect('post_detail', post_id=post.id)
