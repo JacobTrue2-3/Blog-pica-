@@ -6,15 +6,28 @@
 
     <h1>Создать новый пост</h1>
 
-    <form method="post" action="{% url 'post_add' %}">
+    <form method="POST">
         {% csrf_token %}
         <div> 
             <label for="titleInput">Заголовок поста:</label>
-            <input id="titleInput" type="text" name="title" placeloder="Максимальная длина 200 символов" required maxlength="200">
+            <input 
+                id="titleInput" 
+                type="text" 
+                name="title" 
+                placeholder="Максимальная длина 200 символов" 
+                required
+                value="{{ title|default:'' }}">
+            {% if errors.title %}
+                <div style="color:red;"> {{ errors.title }}</div>            
+            {% endif %}
         </div>
         <div> 
             <label for="textInput">Текст поста:</label>
-            <textarea id="textInput" name="text"></textarea>
+            <textarea id="textInput" name="text" rows="3">{{ text|default:'' }}</textarea>
+                
+            {% if errors.text %}
+                <div style="color:red;"> {{ errors.text }}</div>
+            {% endif %}
         </div>
         
         <button type="submit">Сохранить</button>
