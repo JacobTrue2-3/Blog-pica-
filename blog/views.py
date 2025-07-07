@@ -24,3 +24,4 @@ def get_post_add(request):
     if request.method == 'POST':
         post = Post.objects.create(title=request.POST.get('title'), text=request.POST.get('text'))
         return redirect('post_detail', post_id=post.id)
+

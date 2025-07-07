@@ -9,7 +9,12 @@
     <link rel="stylesheet" href="{% static 'css/core.css' %}">
 </head>
 <body>
-    <header> шапка </header>
+    <header> 
+        <nav>
+            <a href="{% url 'post_list' %}">Список постов</a>
+            <a href="{% url 'post_add' %}">Cоздать пост</a>
+        </nav>
+    </header>
 
     <main> {% block content %}{% endblock  %} </main>
 
