@@ -39,20 +39,34 @@ def get_post_detail(request, post_id):
     context = {'post': post}
     return render(request, 'blog/post_detail.html', context)
 
+# def get_post_add(request):
+#     if request.method == 'POST':
+#         form = PostForm(request.POST)
+#         if form.is_valid():
+#             post = Post.objects.create(
+#                 title=form.cleaned_data['title'], 
+#                 text=form.cleaned_data['text']
+#             )
+#             return redirect('post_detail', post_id=post.id)
+#         # Если форма невалидна, продолжит выполнение и отобразит форму с ошибками
+#     else:
+#         form = PostForm()
+    
+#     return render(request, 'blog/post_add.html', {'form': form})
+
+
 def get_post_add(request):
     if request.method == 'POST':
         form = PostForm(request.POST)
         if form.is_valid():
-            post = Post.objects.create(
-                title=form.cleaned_data['title'], 
-                text=form.cleaned_data['text']
-            )
+            post = form.save()
             return redirect('post_detail', post_id=post.id)
         # Если форма невалидна, продолжит выполнение и отобразит форму с ошибками
     else:
         form = PostForm()
     
     return render(request, 'blog/post_add.html', {'form': form})
+    
 
 # def get_post_add(request):
 #     if request.method == 'GET':
