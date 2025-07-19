@@ -5,7 +5,7 @@ class PostForm(forms.Form):
     title = forms.CharField(
         label='Заголовок поста:', 
         widget=forms.TextInput(attrs={
-            'placeholder': 'максимальная длина 20 символов',
+            'placeholder': 'максимальная длина 50 символов',
             'class': 'title-input'
         })
     )
@@ -21,9 +21,9 @@ class PostForm(forms.Form):
         """Кастомная валидация заголовка"""
         title = self.cleaned_data['title'].strip()
         
-        if len(title) > 20:
+        if len(title) > 50:
             raise ValidationError(
-                'Превышена максимальная длина заголовка (20 символов). '
+                'Превышена максимальная длина заголовка (50 символов). '
                 f'Введено {len(title)} символов.'
             )
         return title
