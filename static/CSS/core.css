@@ -3,3 +3,11 @@
     margin: 0;
     box-sizing: border-box;
 }
+
+.errorlist{
+    border: 1px solid #ccc;
+    padding: 10px;
+    margin: 10px;
+    border-radius: 5px;
+    color: red;
+}
