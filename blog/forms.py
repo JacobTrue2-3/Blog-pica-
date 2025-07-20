@@ -12,7 +12,8 @@ class PostForm(forms.ModelForm):
                 'class': 'title-input'
             }),
             'text': forms.Textarea(attrs={
-                'rows': 3
+                'rows': 3,
+                'class': 'text-input'
             })
         }
         labels = {

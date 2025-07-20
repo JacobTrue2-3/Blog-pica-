@@ -94,3 +94,30 @@ def get_post_add(request):
 #             }
 #             return render(request, 'blog/post_add.html', context=context)
 
+# def update_post(request, post_id):
+#     post = get_object_or_404(Post, id=post_id)
+
+#     if request.method == 'POST':
+#         form = PostForm(request.POST, instance=post)
+#         if form.is_valid():
+#             update_post = form.save()
+#             return redirect('post_detail', post_id=update_post.id)
+    
+#     form = PostForm(instance=post)
+#     return render(request, 'blog/update_post.html', {'form': form})
+
+
+def update_post(request, post_id):
+    post = get_object_or_404(Post, id=post_id)
+    
+    if request.method == 'POST':
+        form = PostForm(request.POST, instance=post)
+        if form.is_valid():
+            form.save()
+            return redirect('post_detail', post_id=post.id)
+        # Если форма невалидна, покажем её снова с ошибками
+        return render(request, 'blog/update_post.html', {'form': form, 'post': post})
+    
+    # GET запрос - показываем форму для редактирования
+    form = PostForm(instance=post)
+    return render(request, 'blog/update_post.html', {'form': form, 'post': post})
