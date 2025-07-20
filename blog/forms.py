@@ -9,11 +9,9 @@ class PostForm(forms.ModelForm):
         widgets = {
             'title': forms.TextInput(attrs={
                 'placeholder': 'максимальная длина 50 символов',
-                'class': 'title-input'
             }),
             'text': forms.Textarea(attrs={
                 'rows': 3,
-                'class': 'text-input'
             })
         }
         labels = {

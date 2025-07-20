@@ -2,74 +2,53 @@ from django.shortcuts import render, get_object_or_404, redirect
 from .models import Post
 from .forms import PostForm
 
-
+#Все посты
 def get_post_list(request):
     posts = Post.objects.all()
-
     return render(request, 'blog/post_list.html', {'posts': posts})
 
-
-# def get_post_detail(request, post_id):
-#     #post = Post.objects.get(id=post_id) #другой вариант
-#     post = get_object_or_404(Post, id=post_id)
-
-
-#     context = {'post': post}
-
-#     return render(request, 'blog/post_detail.html', context)
-
-# def get_post_add(request):
-#     if request.method == 'GET':
-#         form = PostForm()
-#         return render(request, 'blog/post_add.html', {'form': form})
-
-#     if request.method == 'POST':
-#         form = PostForm(request.POST)
-
-#         if form.is_valid():
-#             post = Post.objects.create(
-#                 title=form.cleaned_data['title'], 
-#                 text=form.cleaned_data['text'])
-            
-#             return redirect('post_detail', post_id=post.id)
-
-
+#Пост по id
 def get_post_detail(request, post_id):
     post = get_object_or_404(Post, id=post_id)
     context = {'post': post}
     return render(request, 'blog/post_detail.html', context)
 
-# def get_post_add(request):
-#     if request.method == 'POST':
-#         form = PostForm(request.POST)
-#         if form.is_valid():
-#             post = Post.objects.create(
-#                 title=form.cleaned_data['title'], 
-#                 text=form.cleaned_data['text']
-#             )
-#             return redirect('post_detail', post_id=post.id)
-#         # Если форма невалидна, продолжит выполнение и отобразит форму с ошибками
-#     else:
-#         form = PostForm()
-    
-#     return render(request, 'blog/post_add.html', {'form': form})
-
-
+#Создание поста
 def create_post(request):
     title = "Создать пост"
     submit_button_text = "Создать"
-
     if request.method == 'POST':
         form = PostForm(request.POST)
         if form.is_valid():
             post = form.save()
             return redirect('post_detail', post_id=post.id)
-        # Если форма невалидна, продолжит выполнение и отобразит форму с ошибками
     else:
         form = PostForm()
     
     return render(request, 'blog/post_form.html', {'form': form, 'title': title, 'submit_button_text': submit_button_text})
-    
+
+#Редактирование поста
+def update_post(request, post_id):
+    title = "Редактировать пост"
+    submit_button_text = "Сохранить"
+    post = get_object_or_404(Post, id=post_id)
+    form = PostForm(request.POST or None, instance=post)
+    if request.method == 'POST' and form.is_valid():
+        form.save()
+        return redirect('post_detail', post_id=post.id)
+    return render(request, 'blog/post_form.html', {'form': form, 'post': post, 'title': title, 'submit_button_text': submit_button_text})
+
+#Удаление поста
+def delete_post(request, post_id):
+    post = get_object_or_404(Post, id=post_id)
+    if request.method == 'POST':
+        post.delete()
+        return redirect('post_list')
+    return render(request, 'blog/confirm_post_delete.html', {'post': post})
+
+
+
+#Функции другими способами
 
 # def get_post_add(request):
 #     if request.method == 'GET':
@@ -125,23 +104,41 @@ def create_post(request):
 #     form = PostForm(instance=post)
 #     return render(request, 'blog/update_post.html', {'form': form, 'post': post})
 
-#Короче чем предыдущий вариант, но работает
-def update_post(request, post_id):
-    title = "Редактировать пост"
-    submit_button_text = "Сохранить"
-
-    post = get_object_or_404(Post, id=post_id)
-    form = PostForm(request.POST or None, instance=post)
+# def create_post(request):
+#     if request.method == 'POST':
+#         form = PostForm(request.POST)
+#         if form.is_valid():
+#             post = Post.objects.create(
+#                 title=form.cleaned_data['title'], 
+#                 text=form.cleaned_data['text']
+#             )
+#             return redirect('post_detail', post_id=post.id)
+#         # Если форма невалидна, продолжит выполнение и отобразит форму с ошибками
+#     else:
+#         form = PostForm()
     
-    if request.method == 'POST' and form.is_valid():
-        form.save()
-        return redirect('post_detail', post_id=post.id)
-    
-    return render(request, 'blog/post_form.html', {'form': form, 'post': post, 'title': title, 'submit_button_text': submit_button_text})
+#     return render(request, 'blog/post_add.html', {'form': form})
 
-def delete_post(request, post_id):
-    post = get_object_or_404(Post, id=post_id)
-    if request.method == 'POST':
-        post.delete()
-        return redirect('post_list')
-    return render(request, 'blog/confirm_post_delete.html', {'post': post})
+# def get_post_detail(request, post_id):
+#     #post = Post.objects.get(id=post_id) #другой вариант
+#     post = get_object_or_404(Post, id=post_id)
+
+
+#     context = {'post': post}
+
+#     return render(request, 'blog/post_detail.html', context)
+
+# def create_post(request):
+#     if request.method == 'GET':
+#         form = PostForm()
+#         return render(request, 'blog/post_add.html', {'form': form})
+
+#     if request.method == 'POST':
+#         form = PostForm(request.POST)
+
+#         if form.is_valid():
+#             post = Post.objects.create(
+#                 title=form.cleaned_data['title'], 
+#                 text=form.cleaned_data['text'])
+            
+#             return redirect('post_detail', post_id=post.id)
