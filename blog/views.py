@@ -138,3 +138,10 @@ def update_post(request, post_id):
         return redirect('post_detail', post_id=post.id)
     
     return render(request, 'blog/post_form.html', {'form': form, 'post': post, 'title': title, 'submit_button_text': submit_button_text})
+
+def delete_post(request, post_id):
+    post = get_object_or_404(Post, id=post_id)
+    if request.method == 'POST':
+        post.delete()
+        return redirect('post_list')
+    return render(request, 'blog/post_confirm_delete.html', {'post': post})

@@ -8,8 +8,12 @@
     <h2>Идентификатор поста: {{post.id}}</h2>
     <h3>Заголовок поста: {{post.title}}</h3>
     <p>Текст поста: {{post.text}}</p>
-    <small>Дата создания: {{post.created_at|date:'d.m.y H:i'}}</small>    
-    <a href="{% url 'update_post' post.id %}">Редактировать</a>
+    <small>Дата создания: {{post.created_at|date:'d.m.y H:i'}}</small> <br>   
+    <a href="{% url 'update_post' post.id %}">Редактировать пост</a>
+    <form method="POST" action="{% url 'remove_post' post.id %}">
+        {% comment %} <a href="{% url 'remove_post' post.id %}">Удалить пост</a> {% endcomment %}{% csrf_token %}
+        <button type="submit">Удалить пост</button>
+    </form>
 {% endblock content %}
 
 
