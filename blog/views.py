@@ -144,4 +144,4 @@ def delete_post(request, post_id):
     if request.method == 'POST':
         post.delete()
         return redirect('post_list')
-    return render(request, 'blog/post_confirm_delete.html', {'post': post})
+    return render(request, 'blog/confirm_post_delete.html', {'post': post})

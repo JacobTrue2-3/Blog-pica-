@@ -10,10 +10,7 @@
     <p>Текст поста: {{post.text}}</p>
     <small>Дата создания: {{post.created_at|date:'d.m.y H:i'}}</small> <br>   
     <a href="{% url 'update_post' post.id %}">Редактировать пост</a>
-    <form method="POST" action="{% url 'remove_post' post.id %}">
-        {% comment %} <a href="{% url 'remove_post' post.id %}">Удалить пост</a> {% endcomment %}{% csrf_token %}
-        <button type="submit">Удалить пост</button>
-    </form>
+    <a href="{% url 'remove_post' post.id %}">Удалить пост</a>
 {% endblock content %}
 
 
