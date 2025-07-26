@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% load django_bootstrap5 %}
 
 {% block title %}{{ title }}{% endblock title %}
 
@@ -18,18 +19,19 @@
 
 
         {% comment %} {{ form.as_p }} {% endcomment %}
-
+        {% comment %} {% bootstrap_form form %} {% endcomment %}
         <div>
             {{ form.title.label_tag }}
-            {{ form.title}}
+            {{ form.title }} 
             {{ form.title.errors }}
         </div>
         <div>
             {{ form.text.label_tag }}
             {{ form.text}}
-        </div> 
+        </div>  
         
 
-        <button type="submit">{{ submit_button_text }}</button>
+        <button type="submit" class="btn btn-success">{{ submit_button_text }}</button>
+        
     </form>
 {% endblock content %} 
