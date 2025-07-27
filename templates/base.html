@@ -38,8 +38,18 @@
                     
                     <!-- Меню пользователя (справа) -->
                     <ul class="navbar-nav">
+                        {% if request.user.is_authenticated %}
+                            <div "text-white me-3 align-self-center">
+                                Hello {{ request.user }}
+                            </div>
+                            <li class="nav-item">
+                            <a class="nav-link" href="{% url 'logout' %}">
+                                <i class="bi bi-box-arrow-in-right"></i> Выйти
+                            </a>
+                        </li>
+                        {% else %}
                         <li class="nav-item">
-                            <a class="nav-link" href="#}">
+                            <a class="nav-link" href="{% url 'login' %}">
                                 <i class="bi bi-box-arrow-in-right"></i> Вход
                             </a>
                         </li>
@@ -48,6 +58,7 @@
                                 <i class="bi bi-person-plus"></i> Регистрация
                             </a>
                         </li>
+                        {% endif %}
                     </ul>
                 </div>
             </div>
