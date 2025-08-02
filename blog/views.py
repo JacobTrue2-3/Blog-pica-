@@ -1,6 +1,8 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from .models import Post
 from .forms import PostForm
+from django.contrib.auth.decorators import login_required
+
 
 #Все посты
 def get_post_list(request):
@@ -14,6 +16,7 @@ def get_post_detail(request, post_id):
     return render(request, 'blog/post_detail.html', context)
 
 #Создание поста
+@login_required
 def create_post(request):
     title = "Создать пост"
     submit_button_text = "Создать"
@@ -142,3 +145,4 @@ def delete_post(request, post_id):
 #                 text=form.cleaned_data['text'])
             
 #             return redirect('post_detail', post_id=post.id)
+
