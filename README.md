@@ -15,4 +15,15 @@ python manage.py migrate
 ```bash
 python manage.py runserver
 ```
+##
+```bash
+pip install django-extensions
 
+INSTALLED_APPS = [
+    ...
+    'django_extensions',  # Без дефиса!
+    ...
+]
+
+./manage.py shell_plus --print-sql
+```
