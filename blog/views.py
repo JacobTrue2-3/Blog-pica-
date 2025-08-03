@@ -153,4 +153,5 @@ def delete_post(request, post_id):
 #             return redirect('post_detail', post_id=post.id)
 
 def main_page(request):
-    return render(request, 'blog/main_page.html')
+    posts = Post.objects.all().order_by('-created_at')  # Получаем все посты, сортируем по дате
+    return render(request, 'blog/main_page.html',{'posts': posts})
