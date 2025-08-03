@@ -1,51 +1,125 @@
 {% extends "base.html" %}
 {% load django_bootstrap5 %}
 
-{% block title %}{{ post.title }}{% endblock title %}
+{% block title %}{{ post.title }} | Блог{% endblock title %}
 
 {% block content %}
 <div class="container mt-4">
     <div class="row justify-content-center">
         <div class="col-lg-8">
-            <!-- Кнопка "Назад" -->
-            <a href="{% url 'post_list' %}" class="btn btn-outline-secondary mb-4">
-                <i class="bi bi-arrow-left"></i> Назад к списку
-            </a>
-            
+            <!-- Навигация и кнопки -->
+            <nav aria-label="breadcrumb" class="mb-4">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="{% url 'post_list' %}">Все посты</a></li>
+                    <li class="breadcrumb-item active" aria-current="page">{{ post.title|truncatechars:30 }}</li>
+                </ol>
+            </nav>
+
             <!-- Карточка поста -->
-            <div class="card shadow">
-                <div class="card-header bg-primary text-white">
-                    <h1 class="h3 mb-0 text-center">{{ post.title }}</h1>
-                </div>
-                <div class="card-body">
-                    <div class="mb-3">
-                        
-                        <span class="badge bg-light text-dark ms-2">
-                            <i class="bi bi-calendar"></i> {{ post.created_at|date:'d.m.Y H:i' }}
-                        </span>
-                    </div>
-                    
-                    <div class="post-content py-3">
-                        {{ post.text|linebreaks }}
+            <div class="card shadow-sm border-0">
+                <div class="card-header bg-primary bg-gradient text-white">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <h1 class="h4 mb-0">{{ post.title }}</h1>
+                        <div class="dropdown">
+                            <button class="btn btn-sm btn-light dropdown-toggle" type="button" id="postActions" data-bs-toggle="dropdown" aria-expanded="false">
+                                <i class="bi bi-three-dots-vertical"></i>
+                            </button>
+                            <ul class="dropdown-menu" aria-labelledby="postActions">
+                                <li><a class="dropdown-item" href="{% url 'update_post' post.id %}"><i class="bi bi-pencil me-2"></i>Редактировать</a></li>
+                                <li><a class="dropdown-item text-danger" href="{% url 'remove_post' post.id %}"><i class="bi bi-trash me-2"></i>Удалить</a></li>
+                                <li><hr class="dropdown-divider"></li>
+                                <li><a class="dropdown-item" href="#"><i class="bi bi-share me-2"></i>Поделиться</a></li>
+                            </ul>
+                        </div>
                     </div>
                 </div>
                 
-                <!-- Футер карточки с кнопками действий -->
-                <div class="card-footer bg-light d-flex justify-content-between">
-                    <a href="{% url 'update_post' post.id %}" class="btn btn-warning">
-                        <i class="bi bi-pencil"></i> Редактировать
-                    </a>
-                    <a href="{% url 'remove_post' post.id %}" class="btn btn-danger">
-                        <i class="bi bi-trash"></i> Удалить
-                    </a>
+                <div class="card-body">
+                    <!-- Мета-информация о посте -->
+                    <div class="d-flex flex-wrap align-items-center gap-2 mb-3">
+                        <div class="d-flex align-items-center">
+                            <span class="badge bg-light text-dark">
+                                <i class="bi bi-person-circle me-1"></i> {{ post.author.username }}
+                            </span>
+                        </div>
+                        <div class="d-flex align-items-center">
+                            <span class="badge bg-light text-dark">
+                                <i class="bi bi-calendar me-1"></i> {{ post.created_at|date:'d.m.Y H:i' }}
+                            </span>
+                        </div>
+                        {% if post.updated_at != post.created_at %}
+                        <div class="d-flex align-items-center">
+                            <span class="badge bg-light text-dark">
+                                <i class="bi bi-pencil-square me-1"></i> Обновлено: {{ post.updated_at|date:'d.m.Y H:i' }}
+                            </span>
+                        </div>
+                        {% endif %}
+                    </div>
+                    
+                    <!-- Содержимое поста -->
+                    <article class="post-content py-2 px-lg-3">
+                        {{ post.text|linebreaks }}
+                    </article>
+                    
+                    <!-- Теги (если есть) -->
+                    {% if post.tags.all %}
+                    <div class="mt-4">
+                        {% for tag in post.tags.all %}
+                        <span class="badge bg-secondary me-1">#{{ tag.name }}</span>
+                        {% endfor %}
+                    </div>
+                    {% endif %}
+                </div>
+                
+                <!-- Футер карточки -->
+                <div class="card-footer bg-light">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <button class="btn btn-sm btn-outline-primary me-2">
+                                <i class="bi bi-hand-thumbs-up"></i> Нравится
+                            </button>
+                            <button class="btn btn-sm btn-outline-secondary">
+                                <i class="bi bi-chat-left-text"></i> Комментировать
+                            </button>
+                        </div>
+                        <div class="text-muted small">
+                            <i class="bi bi-eye"></i> Просмотров: 0
+                        </div>
+                    </div>
                 </div>
             </div>
             
-            <!-- Дополнительная информация (можно добавить автора и т.д.) -->
-            <div class="mt-3 text-muted small">
-                <i class="bi bi-info-circle"></i> Пост создан {{ post.created_at|timesince }} назад
+            <!-- Комментарии (заглушка) -->
+            <div class="card mt-4 shadow-sm">
+                <div class="card-header bg-light">
+                    <h2 class="h5 mb-0"><i class="bi bi-chat-square-text me-2"></i>Комментарии (0)</h2>
+                </div>
+                <div class="card-body">
+                    <div class="text-center py-4 text-muted">
+                        Пока нет комментариев. Будьте первым!
+                    </div>
+                    <form>
+                        <div class="mb-3">
+                            <textarea class="form-control" rows="3" placeholder="Ваш комментарий..."></textarea>
+                        </div>
+                        <button type="submit" class="btn btn-primary btn-sm">Отправить</button>
+                    </form>
+                </div>
             </div>
         </div>
     </div>
 </div>
+
+<style>
+    .post-content {
+        font-size: 1.1rem;
+        line-height: 1.8;
+    }
+    .post-content img {
+        max-width: 100%;
+        height: auto;
+        border-radius: 0.25rem;
+        margin: 1rem 0;
+    }
+</style>
 {% endblock content %}
