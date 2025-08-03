@@ -15,20 +15,26 @@ def get_post_detail(request, post_id):
     context = {'post': post}
     return render(request, 'blog/post_detail.html', context)
 
-#Создание поста
 @login_required
 def create_post(request):
     title = "Создать пост"
     submit_button_text = "Создать"
+    
     if request.method == 'POST':
         form = PostForm(request.POST)
         if form.is_valid():
-            post = form.save()
+            post = form.save(commit=False)  # Не сохраняем сразу в БД
+            post.author = request.user  # Устанавливаем текущего пользователя как автора
+            post.save()  # Теперь сохраняем с автором
             return redirect('post_detail', post_id=post.id)
     else:
         form = PostForm()
     
-    return render(request, 'blog/post_form.html', {'form': form, 'title': title, 'submit_button_text': submit_button_text})
+    return render(request, 'blog/post_form.html', {
+        'form': form, 
+        'title': title, 
+        'submit_button_text': submit_button_text
+    })
 
 #Редактирование поста
 def update_post(request, post_id):
@@ -146,3 +152,5 @@ def delete_post(request, post_id):
             
 #             return redirect('post_detail', post_id=post.id)
 
+def main_page(request):
+    return render(request, 'blog/main_page.html')

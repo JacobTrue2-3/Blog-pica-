@@ -20,9 +20,9 @@ python manage.py runserver
 pip install django-extensions
 
 INSTALLED_APPS = [
-    ...
-    'django_extensions',  # Без дефиса!
-    ...
+    
+    'django_extensions', 
+    
 ]
 
 ./manage.py shell_plus --print-sql
