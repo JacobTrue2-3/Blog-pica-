@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+{% load django_bootstrap5 %}
+
+
+{% block title %} Профиль {% endblock title %}
+
+{% block content %}
+{% if user == request.user %}
+    <h1> My profile</h1>
+    <p>Добро пожаловать, {{ user.username }}!</p>
+{% else %}
+    <h1>Профиль пользователя {{ user.username }}</h1>
+{% endif %}
+    {% if posts %}
+    <h2>Посты пользователя</h2>
+    <ul class="list-group">
+        {% for post in posts %}
+        <li class="list-group-item">
+            <a href="{% url 'post_detail' post.id %}">{{ post.title }}</a>
+            <span class="text-muted"> - {{ post.created_at|date:'d.m.Y H:i' }}</span>
+        </li>
+        {% endfor %}
+    </ul>
+    {% else %} 
+    <p>Пользователь не создал ни одного поста.</p>
+    {% endif %}
+        
+{% endblock content %}
+
+
+

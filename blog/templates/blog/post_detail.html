@@ -32,11 +32,10 @@
                                 <li><a class="dropdown-item text-danger" href="{% url 'remove_post' post.id %}"><i class="bi bi-trash me-2"></i>Удалить</a></li>
                                 <li><hr class="dropdown-divider"></li>
                                 <li><a class="dropdown-item" href="#"><i class="bi bi-share me-2"></i>Поделиться</a></li>
-                            </ul>
-                            
+                            </ul>                            
                         </div>
                         {% endif %}
-                        
+
                     </div>
                 </div>
                 
@@ -45,6 +44,7 @@
                     <div class="d-flex flex-wrap align-items-center gap-2 mb-3">
                         <div class="d-flex align-items-center">
                             <span class="badge bg-light text-dark">
+                                <a href="{% url 'profile' post.author.username %}">
                                 <i class="bi bi-person-circle me-1"></i> {{ post.author.username }}
                             </span>
                             
