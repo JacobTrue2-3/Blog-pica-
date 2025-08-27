@@ -8,8 +8,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}{% endblock title %}</title>
+
     <link rel="stylesheet" href="{% static 'css/core.css' %}"> 
+    <script src="{% static 'js/core.js' %}" type="module" defer></script>    
     {% bootstrap_css %}
+    {% bootstrap_javascript %}
+    
     <!-- Добавляем иконки Bootstrap -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
 </head>
@@ -78,8 +82,9 @@
             &copy; Все права защищены 2025
         </div>
     </footer>
-
-    <script src="{% static 'js/core.js' %}"></script>     
-    {% bootstrap_javascript %}
+    <button id="scrollToTopBtn" class="scrol-to-top"><i class="bi bi-arrow-up"></i>
+    </button>
+    
+    
 </body>
 </html>
