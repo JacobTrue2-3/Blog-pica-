@@ -10,7 +10,7 @@
             <!-- Навигация и кнопки -->
             <nav aria-label="breadcrumb" class="mb-4">
                 <ol class="breadcrumb">
-                    <li class="breadcrumb-item"><a href="{% url 'post_list' %}">Все посты</a></li>
+                    <li class="breadcrumb-item"><a href="{% url 'blog:post_list' %}">Все посты</a></li>
                     <li class="breadcrumb-item active" aria-current="page">{{ post.title|truncatechars:30 }}</li>
                 </ol>
             </nav>
@@ -28,8 +28,8 @@
                             </button>
                             
                             <ul class="dropdown-menu" aria-labelledby="postActions">
-                                <li><a class="dropdown-item" href="{% url 'update_post' post.id %}"><i class="bi bi-pencil me-2"></i>Редактировать</a></li>
-                                <li><a class="dropdown-item text-danger" href="{% url 'remove_post' post.id %}"><i class="bi bi-trash me-2"></i>Удалить</a></li>
+                                <li><a class="dropdown-item" href="{% url 'blog:update_post' post.id %}"><i class="bi bi-pencil me-2"></i>Редактировать</a></li>
+                                <li><a class="dropdown-item text-danger" href="{% url 'blog:remove_post' post.id %}"><i class="bi bi-trash me-2"></i>Удалить</a></li>
                                 <li><hr class="dropdown-divider"></li>
                                 <li><a class="dropdown-item" href="#"><i class="bi bi-share me-2"></i>Поделиться</a></li>
                             </ul>                            
@@ -44,7 +44,7 @@
                     <div class="d-flex flex-wrap align-items-center gap-2 mb-3">
                         <div class="d-flex align-items-center">
                             <span class="badge bg-light text-dark">
-                                <a href="{% url 'profile' post.author.username %}">
+                                <a href="{% url 'users:profile' post.author.username %}">
                                 <i class="bi bi-person-circle me-1"></i> {{ post.author.username }}
                             </span>
                             

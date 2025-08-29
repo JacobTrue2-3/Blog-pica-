@@ -21,7 +21,7 @@
     <header> 
         <nav class="navbar navbar-expand-sm navbar-dark bg-dark">
             <div class="container-fluid">
-                <a class="navbar-brand" href="{% url 'main_page' %}">
+                <a class="navbar-brand" href="{% url 'blog:main_page' %}">
                     <i class="bi bi-camera"></i> Pikaby
                 </a>
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
@@ -31,12 +31,12 @@
                     <!-- Основное меню (слева) -->
                     <ul class="navbar-nav me-auto">
                         <li class="nav-item">
-                            <a class="nav-link active" href="{% url 'post_list' %}">
+                            <a class="nav-link active" href="{% url 'blog:post_list' %}">
                                 <i class="bi bi-list-ul"></i> Посты
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="{% url 'post_add' %}">
+                            <a class="nav-link" href="{% url 'blog:post_add' %}">
                                 <i class="bi bi-plus-circle"></i> Создать пост
                             </a>
                         </li>
@@ -46,23 +46,23 @@
                     <ul class="navbar-nav">
                         {% if request.user.is_authenticated %}
                             <li class="nav-item">
-                                <a class="nav-link text-white me-3" href="{% url 'profile' request.user.username %}">
+                                <a class="nav-link text-white me-3" href="{% url 'users:profile' request.user.username %}">
                                     <i class="bi bi-person-circle me-1"></i> {{ request.user }}
                                 </a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link" href="{% url 'logout' %}">
+                                <a class="nav-link" href="{% url 'users:logout' %}">
                                     <i class="bi bi-box-arrow-in-right"></i> Выйти
                                 </a>
                             </li>
                         {% else %}
                             <li class="nav-item">
-                                <a class="nav-link" href="{% url 'login' %}">
+                                <a class="nav-link" href="{% url 'users:login' %}">
                                     <i class="bi bi-box-arrow-in-right"></i> Вход
                                 </a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link" href="{% url 'register' %}">
+                                <a class="nav-link" href="{% url 'users:register' %}">
                                     <i class="bi bi-person-plus"></i> Регистрация
                                 </a>
                             </li>

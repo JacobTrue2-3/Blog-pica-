@@ -10,8 +10,8 @@ def get_post_list(request):
     return render(request, 'blog/post_list.html', {'posts': posts})
 
 #Пост по id
-def get_post_detail(request, post_id):
-    post = get_object_or_404(Post, id=post_id)
+def get_post_detail(request, post_slug):
+    post = get_object_or_404(Post, slug=post_slug)
     context = {'post': post}
     return render(request, 'blog/post_detail.html', context)
 
@@ -27,7 +27,7 @@ def create_post(request):
             post = form.save(commit=False)  # Не сохраняем сразу в БД
             post.author = request.user  # Устанавливаем текущего пользователя как автора
             post.save()  # Теперь сохраняем с автором
-            return redirect('post_detail', post_id=post.id)
+            return redirect('blog:post_detail', post_slug=post.slug)
     else:
         form = PostForm()
     
@@ -45,7 +45,7 @@ def update_post(request, post_id):
     form = PostForm(request.POST or None, instance=post, files=request.FILES or None)
     if request.method == 'POST' and form.is_valid():
         form.save()
-        return redirect('post_detail', post_id=post.id)
+        return redirect('blog:post_detail', post_slug=post.slug)
     return render(request, 'blog/post_form.html', {'form': form, 'post': post, 'title': title, 'submit_button_text': submit_button_text})
 
 #Удаление поста
@@ -53,7 +53,7 @@ def delete_post(request, post_id):
     post = get_object_or_404(Post, id=post_id)
     if request.method == 'POST':
         post.delete()
-        return redirect('post_list')
+        return redirect('blog:post_list')
     return render(request, 'blog/confirm_post_delete.html', {'post': post})
 
 

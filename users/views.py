@@ -15,7 +15,7 @@ def register_view(request):
         if form.is_valid():
             user = form.save()
             login(request, user)
-            return redirect('post_list') #поменять на профиль 
+            return redirect('blog:post_list') #поменять на профиль 
         else:
             return render(request, 'users/register.html', {'form': form})
     form = UserCreationForm
@@ -45,7 +45,7 @@ def login_view(request):
 
 def logout_view(request):
     logout(request)
-    return redirect('post_list')
+    return redirect('blog:post_list')
 
 def user_profile(request, user_username):
     user = get_object_or_404(User, username=user_username)
