@@ -15,7 +15,9 @@
     <h2>Посты пользователя</h2>
     <ul class="list-group">
         {% for post in posts %}
-            {% include "blog/includes/post_conteiner_include.html" %}
+            {%if user == request.user or post.status != 'draft' %}
+                {% include "blog/includes/post_conteiner_include.html" %}
+            {% endif %}
         {% endfor %}
     </ul>
     {% else %} 

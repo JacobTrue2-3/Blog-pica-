@@ -6,7 +6,7 @@ from django.contrib.auth.decorators import login_required
 
 #Все посты
 def get_post_list(request):
-    posts = Post.objects.all()
+    posts = Post.objects.filter(status='published').order_by('-created_at')  # Фильтруем только опубликованные посты и сортируем по дате
     return render(request, 'blog/post_list.html', {'posts': posts})
 
 #Пост по id

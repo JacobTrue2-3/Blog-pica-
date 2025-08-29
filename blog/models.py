@@ -8,6 +8,11 @@ from unidecode import unidecode
 User = get_user_model()
 
 class Post(models.Model):
+    STATUS_CHOICES = [
+        ('published', 'Опубликовано'),
+        ('draft', 'Черновик'),        
+    ]
+
     title = models.CharField(max_length=200, unique=True, verbose_name= "Заголовок") 
     slug = models.SlugField(max_length=200, unique=True, editable=False, verbose_name="URL")
     text = models.TextField(verbose_name= "Текст")
@@ -15,6 +20,7 @@ class Post(models.Model):
     created_at = models.DateTimeField(auto_now_add=True) 
     updated_at = models.DateTimeField(auto_now=True)
     author = models.ForeignKey(User, on_delete=models.CASCADE, related_name='posts', verbose_name="Автор") #SET_NULL позволяет удалить пользователя, но посты останутся
+    status = models.CharField(choices=STATUS_CHOICES, default='draft', verbose_name="Статус")
 
     class Meta:
         verbose_name= "Пост"
