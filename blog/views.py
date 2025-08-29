@@ -1,5 +1,5 @@
 from django.shortcuts import render, get_object_or_404, redirect
-from .models import Post
+from .models import Post, Category
 from .forms import PostForm
 from django.contrib.auth.decorators import login_required
 
@@ -8,6 +8,17 @@ from django.contrib.auth.decorators import login_required
 def get_post_list(request):
     posts = Post.objects.filter(status='published').order_by('-created_at')  # Фильтруем только опубликованные посты и сортируем по дате
     return render(request, 'blog/post_list.html', {'posts': posts})
+
+#Посты по категории
+def get_category_posts(request, category_slug): 
+    category = get_object_or_404(Category, slug=category_slug)
+    posts = Post.objects.filter(category=category, status='published').order_by('-created_at')
+
+    context = {
+        'category': category,
+        'posts': posts
+    }
+    return render(request, 'blog/category_posts.html', context)
 
 #Пост по id
 def get_post_detail(request, post_slug):
@@ -55,6 +66,7 @@ def delete_post(request, post_id):
         post.delete()
         return redirect('blog:post_list')
     return render(request, 'blog/confirm_post_delete.html', {'post': post})
+
 
 
 

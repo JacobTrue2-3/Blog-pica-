@@ -17,6 +17,14 @@
                 {% endif %}
             </div>
             
+            <!-- Категория поста -->
+            <div class="mb-2">
+                <a href="{{ post.category.get_absolute_url }}" class="badge bg-primary bg-opacity-10 text-primary text-decoration-none rounded-pill small">
+                    <i class="bi bi-tag me-1"></i>
+                    {{ post.category.name }}
+                </a>
+            </div>
+            
             <!-- Текст поста -->
             <p class="card-text text-secondary flex-grow-1 mb-3 small">
                 {{ post.text|truncatechars:100 }}

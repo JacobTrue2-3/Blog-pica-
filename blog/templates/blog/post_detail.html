@@ -50,8 +50,13 @@
                             <span class="badge bg-light text-dark">
                                 <a href="{% url 'users:profile' post.author.username %}">
                                 <i class="bi bi-person-circle me-1"></i> {{ post.author.username }}
-                            </span>
-                            
+                            </span>                            
+                        </div>
+                        <div class="mb-2">
+                            <a href="{{ post.category.get_absolute_url }}" class="badge bg-primary bg-opacity-10 text-primary text-decoration-none rounded-pill small">
+                                <i class="bi bi-tag me-1"></i>
+                                {{ post.category.name }}
+                            </a>
                         </div>
                         <div class="d-flex align-items-center">
                             <span class="badge bg-light text-dark">

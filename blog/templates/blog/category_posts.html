@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+{% load django_bootstrap5 %}
+
+{% block title %}Посты в категории {{ category.name }} {% endblock title %}
+
+{% block content %}
+    <a href="javascript:history.back()" class="btn btn-secondary mb-3">&larr; Все посты</a>
+    <h1>Посты в категории: {{ category.name }}</h1>
+
+    {% if posts %}
+        <div class="list-group">
+            {% for post in posts %}
+                {% include "blog/includes/post_conteiner_include.html" %}
+            {% endfor %}
+        </div>
+    {% else %}
+        <p>В этой категории пока нет опубликованных постов.</p>
+    {% endif %}
+{% endblock content %}

@@ -5,7 +5,7 @@ from .models import Post
 class PostForm(forms.ModelForm):
     class Meta:
         model = Post
-        fields = ['title', 'text', 'image']
+        fields = ['title', 'category', 'text', 'image']
         widgets = {
             'title': forms.TextInput(attrs={
                 'placeholder': 'максимальная длина 50 символов', 'class': 'form-control',
@@ -13,10 +13,12 @@ class PostForm(forms.ModelForm):
             'text': forms.Textarea(attrs={
                 'rows': 3, 'class': 'form-control',
             }),
+            'category': forms.Select(attrs={'class': 'form-control',}),
             'image': forms.FileInput(attrs={'class': 'form-control',})
         }
         labels = {
             'title': 'Заголовок поста:',
+            'category': 'Категория:',
             'text': 'Текст поста:',
             'image': 'Изображение:'
         }

@@ -25,16 +25,24 @@
             {{ form.title }} 
             {{ form.title.errors }}
         </div>
+
+        <div>
+            {{ form.category.label_tag }}
+            {{ form.category }}
+            {{ form.category.errors }}
+        </div>
+
         <div>
             {{ form.text.label_tag }}            
             {{ form.text}}
-            </div>
-        </div>          
+        </div>
+
         <div>
             {{ form.image.label_tag }}            
             {{ form.image}}
             {{ form.image.errors }}
         </div>
+
         <br>
         <button type="submit" class="btn btn-success">{{ submit_button_text }}</button>        
     </form>
