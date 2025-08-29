@@ -1,21 +1,35 @@
-<div class="col-md-6"> 
+<div class="col-md-6">
     <div class="card h-100 border-0 shadow-sm hover-shadow transition-all">
         <div class="card-body d-flex flex-column">
-            <h2 class="card-title h5 mb-3">
-                <a href="{% url 'post_detail' post.id %}" class="text-decoration-none text-dark hover-text-primary">
-                    {{ post.title }}
-                </a>
-            </h2>
-            <p class="card-text text-secondary flex-grow-1 mb-4">
-                {{ post.text|truncatechars:120 }}
+            <!-- Контейнер для заголовка и круглого изображения -->
+            <div class="d-flex justify-content-between align-items-start mb-3">
+                <!-- Заголовок занимает основное пространство -->
+                <h2 class="card-title h6 mb-0 me-2 flex-grow-1">
+                    <a href="{% url 'post_detail' post.id %}" class="text-decoration-none text-dark hover-text-primary">
+                        {{ post.title }}
+                    </a>
+                </h2>
+                
+                <!-- Круглое изображение в правом верхнем углу -->
+                {% if post.image %}
+                <img src="{{ post.image.url }}" class="rounded-circle flex-shrink-0" alt="{{ post.title }}"
+                    style="height: 60px; width: 60px; object-fit: cover; margin-top: -5px;">
+                {% endif %}
+            </div>
+            
+            <!-- Текст поста -->
+            <p class="card-text text-secondary flex-grow-1 mb-3 small">
+                {{ post.text|truncatechars:100 }}
             </p>
+            
+            <!-- Нижняя часть с датой и кнопкой -->
             <div class="d-flex justify-content-between align-items-center mt-auto">
                 <small class="text-muted">
                     <i class="bi bi-calendar me-1"></i>
-                    {{ post.created_at|date:"d.m.Y H:i" }}
+                    {{ post.created_at|date:"d.m.Y" }}
                 </small>
                 <a href="{% url 'post_detail' post.id %}" class="btn btn-sm btn-primary rounded-pill px-3">
-                    Читать <i class="bi bi-arrow-right ms-1"></i>
+                    Читать
                 </a>
             </div>
         </div>

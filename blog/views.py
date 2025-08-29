@@ -15,13 +15,14 @@ def get_post_detail(request, post_id):
     context = {'post': post}
     return render(request, 'blog/post_detail.html', context)
 
+#Создание поста
 @login_required
 def create_post(request):
     title = "Создать пост"
     submit_button_text = "Создать"
     
     if request.method == 'POST':
-        form = PostForm(request.POST)
+        form = PostForm(request.POST, request.FILES)
         if form.is_valid():
             post = form.save(commit=False)  # Не сохраняем сразу в БД
             post.author = request.user  # Устанавливаем текущего пользователя как автора
@@ -41,7 +42,7 @@ def update_post(request, post_id):
     title = "Редактировать пост"
     submit_button_text = "Сохранить"
     post = get_object_or_404(Post, id=post_id)
-    form = PostForm(request.POST or None, instance=post)
+    form = PostForm(request.POST or None, instance=post, files=request.FILES or None)
     if request.method == 'POST' and form.is_valid():
         form.save()
         return redirect('post_detail', post_id=post.id)

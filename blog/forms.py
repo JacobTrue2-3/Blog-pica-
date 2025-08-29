@@ -5,18 +5,20 @@ from .models import Post
 class PostForm(forms.ModelForm):
     class Meta:
         model = Post
-        fields = ['title', 'text']
+        fields = ['title', 'text', 'image']
         widgets = {
             'title': forms.TextInput(attrs={
-                'placeholder': 'максимальная длина 50 символов',
+                'placeholder': 'максимальная длина 50 символов', 'class': 'form-control',
             }),
             'text': forms.Textarea(attrs={
-                'rows': 3,
-            })
+                'rows': 3, 'class': 'form-control',
+            }),
+            'image': forms.FileInput(attrs={'class': 'form-control',})
         }
         labels = {
             'title': 'Заголовок поста:',
-            'text': 'Текст поста:'
+            'text': 'Текст поста:',
+            'image': 'Изображение:'
         }
 
     def clean_title(self):
