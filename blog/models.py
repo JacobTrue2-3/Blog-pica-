@@ -10,7 +10,7 @@ User = get_user_model()
 class Post(models.Model):
     STATUS_CHOICES = [
         ('published', 'Опубликовано'),
-        ('draft', 'Черновик'),        
+        ('draft', 'Неопубликовано'),        
     ]
 
     title = models.CharField(max_length=200, unique=True, verbose_name= "Заголовок") 
