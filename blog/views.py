@@ -50,8 +50,8 @@ def create_post(request):
             tag_names = form.cleaned_data.get('tags_input', [])
             for tag_name in tag_names:
                 tag, created = Tag.objects.get_or_create(
-                    name=tag_name,
-                    defaults={'name': tag_name}
+                    name=tag_name.lower(),  # Приводим к нижнему регистру
+                    defaults={'name': tag_name.lower()}
                 )
                 post.tags.add(tag)
             
@@ -83,8 +83,8 @@ def update_post(request, post_id):
             tag_names = form.cleaned_data.get('tags_input', [])
             for tag_name in tag_names:
                 tag, created = Tag.objects.get_or_create(
-                    name=tag_name,
-                    defaults={'name': tag_name}
+                    name=tag_name.lower(),  # Приводим к нижнему регистру
+                    defaults={'name': tag_name.lower()}
                 )
                 post.tags.add(tag)
             
@@ -111,7 +111,9 @@ def delete_post(request, post_id):
         return redirect('blog:post_list')
     return render(request, 'blog/confirm_post_delete.html', {'post': post})
 
-
+def main_page(request):
+    posts = Post.objects.all().order_by('-created_at')  # Получаем все посты, сортируем по дате
+    return render(request, 'blog/main_page.html',{'posts': posts})
 
 
 #Функции другими способами
@@ -209,6 +211,3 @@ def delete_post(request, post_id):
             
 #             return redirect('post_detail', post_id=post.id)
 
-def main_page(request):
-    posts = Post.objects.all().order_by('-created_at')  # Получаем все посты, сортируем по дате
-    return render(request, 'blog/main_page.html',{'posts': posts})

@@ -55,8 +55,11 @@ class PostForm(forms.ModelForm):
         if not tags_input:
             return []
         
-        # Разделяем теги по запятой и очищаем от пробелов
-        tag_names = [name.strip() for name in tags_input.split(',') if name.strip()]
+        # Разделяем теги по запятой, очищаем от пробелов и приводим к нижнему регистру
+        tag_names = [name.strip().lower() for name in tags_input.split(',') if name.strip()]
+        
+        # Удаляем дубликаты
+        tag_names = list(dict.fromkeys(tag_names))
         
         # Проверяем длину каждого тега
         for tag_name in tag_names:

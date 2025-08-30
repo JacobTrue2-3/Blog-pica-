@@ -62,10 +62,12 @@ class Tag(models.Model):
     name = models.CharField(max_length=100, verbose_name="Название")
     slug = models.SlugField(unique=True, editable=False, verbose_name="URL")
 
-    def save (self, *args, **kwargs):
+    def save(self, *args, **kwargs):
+        # Нормализуем имя тега (приводим к нижнему регистру)
+        self.name = self.name.lower()
         self.slug = slugify(unidecode(self.name))
-        super().save(*args, **kwargs)#вызываем метод save родительского класса
-    
+        super().save(*args, **kwargs)
+
     class Meta:
         verbose_name = "Тег"
         verbose_name_plural = "Теги"
