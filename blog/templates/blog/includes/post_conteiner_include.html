@@ -1,3 +1,7 @@
+{% load static %}
+<link rel="stylesheet" href="{% static 'css/tags.css' %}">
+
+
 <div class="col-md-6">
     <div class="card h-100 border-0 shadow-sm hover-shadow transition-all">
         <div class="card-body d-flex flex-column">
@@ -17,22 +21,27 @@
                 {% endif %}
             </div>
             
-            <!-- Категория поста -->
+            <!-- Категория -->
             <div class="mb-2">
-                <a href="{{ post.category.get_absolute_url }}" class="badge bg-primary bg-opacity-10 text-primary text-decoration-none rounded-pill small">
-                    <i class="bi bi-tag me-1"></i>
-                    {{ post.category.name }}
+                <a href="{{ post.category.get_absolute_url }}"
+                class="badge category-badge text-white text-decoration-none rounded-pill small fw-semibold">
+                <i class="bi bi-grid-1x2 me-1"></i>
+                {{ post.category.name }}
                 </a>
             </div>
-            <!-- Добавить отображение тегов -->
+            
+            <!-- Теги -->
             <div class="mb-2">
                 {% for tag in post.tags.all %}
-                    <a href="{{ tag.get_absolute_url }}" class="badge bg-gradient-info bg-opacity-10 text-info text-decoration-none rounded-pill small me-1">
-                        <i class="bi bi-tag-fill me-1"></i>
-                        {{ tag.name }}
-                    </a>
+                <a href="{{ tag.get_absolute_url }}"
+                    class="badge tag-badge text-decoration-none rounded-pill small me-1 mb-1">
+                    <i class="bi bi-tag me-1"></i>
+                    {{ tag.name }}
+                </a>
                 {% empty %}
-                    <span class="text-muted small">Нет тегов</span>
+                <span class="text-muted small">
+                    <i class="bi bi-tag me-1"></i>Теги отсутствуют
+                </span>
                 {% endfor %}
             </div>
             <!-- Текст поста -->

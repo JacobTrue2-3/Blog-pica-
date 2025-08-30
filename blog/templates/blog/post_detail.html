@@ -1,5 +1,6 @@
 {% extends "base.html" %}
 {% load django_bootstrap5 %}
+{% load static %}
 
 {% block title %}{{ post.title }} | Блог{% endblock title %}
 
@@ -22,7 +23,7 @@
                         <h1 class="h4 mb-0">{{ post.title }}</h1>
                         
                         {% if request.user == post.author %}
-                        Статус: {{ post.get_status_display }}                            
+                            Статус: {{ post.get_status_display }}
                         {% endif %}
 
                         {% if request.user == post.author %}
@@ -30,7 +31,6 @@
                             <button class="btn btn-sm btn-light dropdown-toggle" type="button" id="postActions" data-bs-toggle="dropdown" aria-expanded="false">
                                 <i class="bi bi-three-dots-vertical"></i>
                             </button>
-                            
                             <ul class="dropdown-menu" aria-labelledby="postActions">
                                 <li><a class="dropdown-item" href="{% url 'blog:update_post' post.id %}"><i class="bi bi-pencil me-2"></i>Редактировать</a></li>
                                 <li><a class="dropdown-item text-danger" href="{% url 'blog:remove_post' post.id %}"><i class="bi bi-trash me-2"></i>Удалить</a></li>
@@ -39,59 +39,68 @@
                             </ul>                            
                         </div>
                         {% endif %}
-
                     </div>
                 </div>
                 
                 <div class="card-body">
-                    <!-- Мета-информация о посте -->
+                    <!-- Мета-информация -->
                     <div class="d-flex flex-wrap align-items-center gap-2 mb-3">
-                        <div class="d-flex align-items-center">
+                        <div>
                             <span class="badge bg-light text-dark">
-                                <a href="{% url 'users:profile' post.author.username %}">
-                                <i class="bi bi-person-circle me-1"></i> {{ post.author.username }}
-                            </span>                            
+                                <a href="{% url 'users:profile' post.author.username %}" class="text-decoration-none text-dark">
+                                    <i class="bi bi-person-circle me-1"></i> {{ post.author.username }}
+                                </a>
+                            </span>
                         </div>
-                        <div class="mb-2">
-                            <a href="{{ post.category.get_absolute_url }}" class="badge bg-primary bg-opacity-10 text-primary text-decoration-none rounded-pill small">
-                                <i class="bi bi-tag me-1"></i>
+
+                        <!-- Категория -->
+                        <div>
+                            <a href="{{ post.category.get_absolute_url }}"
+                               class="badge category-badge text-white text-decoration-none rounded-pill small">
+                                <i class="bi bi-grid-1x2 me-1"></i>
                                 {{ post.category.name }}
                             </a>
                         </div>
-                        <div class="d-flex align-items-center">
+
+                        <!-- Дата -->
+                        <div>
                             <span class="badge bg-light text-dark">
                                 <i class="bi bi-calendar me-1"></i> {{ post.created_at|date:'d.m.Y H:i' }}
                             </span>
                         </div>
                         {% if post.updated_at != post.created_at %}
-                        <div class="d-flex align-items-center">
+                        <div>
                             <span class="badge bg-light text-dark">
                                 <i class="bi bi-pencil-square me-1"></i> Обновлено: {{ post.updated_at|date:'d.m.Y H:i' }}
                             </span>
                         </div>
                         {% endif %}
                     </div>
-                    <!-- Изображение поста (если есть) -->
+
+                    <!-- Изображение -->
                     {% if post.image %}
-                    <img src="{{ post.image.url }}" alt="Изображение поста" class="img-fluid rounded mt-3 mb-2">
+                        <img src="{{ post.image.url }}" alt="Изображение поста" class="img-fluid rounded mt-3 mb-2">
                     {% endif %}
 
-                    <!-- Содержимое поста -->
+                    <!-- Содержимое -->
                     <article class="post-content py-2 px-lg-3">
                         {{ post.text|linebreaks }}
                     </article>
                     
-                    <!-- Теги (если есть) -->
+                    <!-- Теги -->
                     {% if post.tags.all %}
                     <div class="mt-4">
                         {% for tag in post.tags.all %}
-                        <span class="badge bg-secondary me-1">#{{ tag.name }}</span>
+                            <a href="{{ tag.get_absolute_url }}"
+                               class="badge tag-badge text-decoration-none rounded-pill small me-1 mb-1">
+                                <i class="bi bi-tag me-1"></i>{{ tag.name }}
+                            </a>
                         {% endfor %}
                     </div>
                     {% endif %}
                 </div>
                 
-                <!-- Футер карточки -->
+                <!-- Футер -->
                 <div class="card-footer bg-light">
                     <div class="d-flex justify-content-between align-items-center">
                         <div>
@@ -109,7 +118,7 @@
                 </div>
             </div>
             
-            <!-- Комментарии (заглушка) -->
+            <!-- Комментарии -->
             <div class="card mt-4 shadow-sm">
                 <div class="card-header bg-light">
                     <h2 class="h5 mb-0"><i class="bi bi-chat-square-text me-2"></i>Комментарии (0)</h2>
@@ -129,6 +138,8 @@
         </div>
     </div>
 </div>
+
+<link rel="stylesheet" href="{% static 'css/tags.css' %}">
 
 <style>
     .post-content {
