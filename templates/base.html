@@ -7,6 +7,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}{% endblock title %}</title>
+    <link rel="icon" type="image/x-icon" href="{% static 'favicon.ico' %}">
 
     <link rel="stylesheet" href="{% static 'css/core.css' %}"> 
     <script src="{% static 'js/core.js' %}" type="module" defer></script>    
@@ -31,13 +32,13 @@
                     <ul class="navbar-nav me-auto">
                         <li class="nav-item">
                             <a class="nav-link {% if request.resolver_match.url_name == 'post_list' %}active{% endif %}" 
-                               href="{% url 'blog:post_list' %}">
+                                href="{% url 'blog:post_list' %}">
                                 <i class="bi bi-list-ul"></i> Посты
                             </a>
                         </li>
                         <li class="nav-item">
                             <a class="nav-link {% if request.resolver_match.url_name == 'post_add' %}active{% endif %}" 
-                               href="{% url 'blog:post_add' %}">
+                                href="{% url 'blog:post_add' %}">
                                 <i class="bi bi-plus-circle"></i> Создать пост
                             </a>
                         </li>
@@ -48,7 +49,7 @@
                         {% if request.user.is_authenticated %}
                             <li class="nav-item">
                                 <a class="nav-link {% if request.resolver_match.url_name == 'profile' and request.resolver_match.kwargs.username == request.user.username %}active{% endif %} text-white me-3" 
-                                   href="{% url 'users:profile' request.user.username %}">
+                                    href="{% url 'users:profile' request.user.username %}">
                                     <i class="bi bi-person-circle me-1"></i> {{ request.user }}
                                 </a>
                             </li>
@@ -60,13 +61,13 @@
                         {% else %}
                             <li class="nav-item">
                                 <a class="nav-link {% if request.resolver_match.url_name == 'login' %}active{% endif %}" 
-                                   href="{% url 'users:login' %}">
+                                    href="{% url 'users:login' %}">
                                     <i class="bi bi-box-arrow-in-right"></i> Вход
                                 </a>
                             </li>
                             <li class="nav-item">
                                 <a class="nav-link {% if request.resolver_match.url_name == 'register' %}active{% endif %}" 
-                                   href="{% url 'users:register' %}">
+                                    href="{% url 'users:register' %}">
                                     <i class="bi bi-person-plus"></i> Регистрация
                                 </a>
                             </li>
