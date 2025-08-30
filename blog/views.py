@@ -1,5 +1,5 @@
 from django.shortcuts import render, get_object_or_404, redirect
-from .models import Post, Category
+from .models import Post, Category, Tag
 from .forms import PostForm
 from django.contrib.auth.decorators import login_required
 
@@ -19,6 +19,13 @@ def get_category_posts(request, category_slug):
         'posts': posts
     }
     return render(request, 'blog/category_posts.html', context)
+    
+#Посты по тегу
+def get_tag_posts(request, tag_slug):
+    tag = get_object_or_404(Tag, slug=tag_slug)
+    posts = Post.objects.filter(tags=tag, status='published').order_by('-created_at')
+    context = {'tag': tag, 'posts': posts}
+    return render(request, 'blog/tag_posts.html', context)
 
 #Пост по id
 def get_post_detail(request, post_slug):

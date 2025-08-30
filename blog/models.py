@@ -17,11 +17,12 @@ class Post(models.Model):
     title = models.CharField(max_length=200, unique=True, verbose_name= "Заголовок") 
     slug = models.SlugField(max_length=200, unique=True, editable=False, verbose_name="URL")
     category = models.ForeignKey('Category', on_delete=models.CASCADE, related_name='posts', verbose_name="Категория")
+    tags = models.ManyToManyField('Tag', related_name='posts', blank=True, verbose_name="Теги")
     text = models.TextField(verbose_name= "Текст")
     image = models.ImageField(upload_to='posts/', null=True, blank=True, verbose_name="Изображение")
     created_at = models.DateTimeField(auto_now_add=True) 
     updated_at = models.DateTimeField(auto_now=True)
-    author = models.ForeignKey(User, on_delete=models.CASCADE, related_name='posts', verbose_name="Автор") #SET_NULL позволяет удалить пользователя, но посты останутся
+    author = models.ForeignKey(User, on_delete=models.CASCADE, related_name='posts', verbose_name="Автор") #CASCADE позволяет удалить пользователя, но посты останутся, SET_NULL позволяет удалить пользователя, но посты останутся
     status = models.CharField(choices=STATUS_CHOICES, default='draft', verbose_name="Статус")
 
     class Meta:
@@ -55,3 +56,23 @@ class Category(models.Model):
 
     def __str__(self):
         return self.name
+
+
+class Tag(models.Model):
+    name = models.CharField(max_length=100, verbose_name="Название")
+    slug = models.SlugField(unique=True, editable=False, verbose_name="URL")
+
+    def save (self, *args, **kwargs):
+        self.slug = slugify(unidecode(self.name))
+        super().save(*args, **kwargs)#вызываем метод save родительского класса
+    
+    class Meta:
+        verbose_name = "Тег"
+        verbose_name_plural = "Теги"
+        db_table = "blog_tags"
+        
+    def __str__(self):
+        return f'#{self.name}'
+
+    def get_absolute_url(self):
+        return reverse('blog:tag_posts', args=[self.slug])
