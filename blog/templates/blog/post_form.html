@@ -43,6 +43,12 @@
             {{ form.image.errors }}
         </div>
 
+        <div>
+            {{ form.tags.label_tag }}            
+            {{ form.tags }}
+            {{ form.tags.errors }}
+        </div>
+
         <br>
         <button type="submit" class="btn btn-success">{{ submit_button_text }}</button>        
     </form>

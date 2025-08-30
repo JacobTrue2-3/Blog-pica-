@@ -45,6 +45,7 @@ def create_post(request):
             post = form.save(commit=False)  # Не сохраняем сразу в БД
             post.author = request.user  # Устанавливаем текущего пользователя как автора
             post.save()  # Теперь сохраняем с автором
+            form.save_m2m()
             return redirect('blog:post_detail', post_slug=post.slug)
     else:
         form = PostForm()
