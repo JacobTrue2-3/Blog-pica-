@@ -9,17 +9,7 @@
 
     <form method="POST" enctype="multipart/form-data">
         {% csrf_token %}
-        {% comment %} {% for field in form %}
-            <div>
-                {{ field.label_tag }}
-                {{ field }}
-                {{ field.errors }}
-            </div>        
-        {% endfor %} {% endcomment %}
-
-
-        {% comment %} {{ form.as_p }} {% endcomment %}
-        {% comment %} {% bootstrap_form form %} {% endcomment %}
+        
         <div>
             {{ form.title.label_tag }}
             {{ form.title }} 
@@ -35,6 +25,7 @@
         <div>
             {{ form.text.label_tag }}            
             {{ form.text}}
+            {{ form.text.errors }}
         </div>
 
         <div>
@@ -44,12 +35,13 @@
         </div>
 
         <div>
-            {{ form.tags.label_tag }}            
-            {{ form.tags }}
-            {{ form.tags.errors }}
+            {{ form.tags_input.label_tag }}            
+            {{ form.tags_input }}
+            {{ form.tags_input.errors }}
+            <small class="form-text text-muted">Введите теги через запятую, например: django, python, js</small>
         </div>
 
         <br>
         <button type="submit" class="btn btn-success">{{ submit_button_text }}</button>        
     </form>
-{% endblock content %} 
+{% endblock content %}
