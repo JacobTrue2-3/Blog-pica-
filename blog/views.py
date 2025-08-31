@@ -78,6 +78,10 @@ class PostUpdateView(LoginRequiredMixin, UpdateView):
     model = Post
     form_class = PostForm
     template_name = 'blog/post_form.html'
+    extra_context = {
+        'title': "Редактировать пост",
+        'submit_button_text': "Сохранить",
+    }
 
     def form_valid(self, form):
         post = form.save(commit=False)
@@ -94,8 +98,6 @@ class PostUpdateView(LoginRequiredMixin, UpdateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['title'] = "Редактировать пост"
-        context['submit_button_text'] = "Сохранить"
         post = self.get_object()
         context['post'] = post
         context['form'].fields['tags_input'].initial = ', '.join([tag.name for tag in post.tags.all()])
