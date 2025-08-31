@@ -1,3 +1,6 @@
+from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView, TemplateView
+from django.contrib.auth.mixins import LoginRequiredMixin
+
 from django.shortcuts import render, get_object_or_404, redirect
 from .models import Post, Category, Tag
 from .forms import PostForm
@@ -5,21 +8,41 @@ from django.contrib.auth.decorators import login_required
 
 
 # Все посты
-def get_post_list(request):
-    posts = Post.objects.filter(status='published').order_by('-created_at')
-    return render(request, 'blog/post_list.html', {'posts': posts})
+# def get_post_list(request):
+#     posts = Post.objects.filter(status='published').order_by('-created_at')
+#     return render(request, 'blog/post_list.html', {'posts': posts})
+
+class PostListView(ListView):
+    model = Post
+    template_name = 'blog/post_list.html'
+    context_object_name = 'posts'
+    queryset = Post.objects.filter(status='published').order_by('-created_at')
 
 # Посты по категории
-def get_category_posts(request, category_slug): 
-    category = get_object_or_404(Category, slug=category_slug)
-    posts = Post.objects.filter(category=category, status='published').order_by('-created_at')
+# def get_category_posts(request, category_slug): 
+#     category = get_object_or_404(Category, slug=category_slug)
+#     posts = Post.objects.filter(category=category, status='published').order_by('-created_at')
 
-    context = {
-        'category': category,
-        'posts': posts
-    }
-    return render(request, 'blog/category_posts.html', context)
+#     context = {
+#         'category': category,
+#         'posts': posts
+#     }
+#     return render(request, 'blog/category_posts.html', context)
     
+class CategoryPostsView(ListView):
+    model = Post
+    template_name = 'blog/category_posts.html'
+    context_object_name = 'posts'
+
+    def get_queryset(self):
+        category = get_object_or_404(Category, slug=self.kwargs['category_slug'])
+        return Post.objects.filter(category=category, status='published').order_by('-created_at')
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['category'] = get_object_or_404(Category, slug=self.kwargs['category_slug'])
+        return context
+
 # Посты по тегу
 def get_tag_posts(request, tag_slug):
     tag = get_object_or_404(Tag, slug=tag_slug)
