@@ -63,8 +63,8 @@ class PostForm(forms.ModelForm):
         
         # Проверяем длину каждого тега
         for tag_name in tag_names:
-            if len(tag_name) > 100:
-                raise ValidationError(f'Тег "{tag_name}" слишком длинный (максимум 100 символов)')
+            if len(tag_name) > 90:
+                raise ValidationError(f'Тег "{tag_name}" слишком длинный (максимум 90 символов)')
         
         return tag_names
 
