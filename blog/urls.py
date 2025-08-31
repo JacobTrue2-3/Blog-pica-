@@ -11,6 +11,6 @@ urlpatterns = [
     path('posts/<int:post_id>/delete/', views.delete_post, name="remove_post"),
     path('posts/category/<slug:category_slug>/', views.CategoryPostsView.as_view(), name="category_posts"),
     path('posts/<slug:post_slug>/', views.get_post_detail, name="post_detail"),
-    path('posts/tag/<slug:tag_slug>/', views.get_tag_posts, name="tag_posts"),
+    path('posts/tag/<slug:tag_slug>/', views.TagPostsView.as_view(), name="tag_posts"),
     path('',views.main_page, name='main_page'),
 ]
