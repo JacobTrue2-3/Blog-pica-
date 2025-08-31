@@ -1,10 +1,8 @@
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView, TemplateView
 from django.contrib.auth.mixins import LoginRequiredMixin
-
-from django.shortcuts import render, get_object_or_404, redirect
+from django.shortcuts import get_object_or_404, redirect
 from .models import Post, Category, Tag
 from .forms import PostForm
-from django.contrib.auth.decorators import login_required
 from django.urls import reverse
 
 # Все посты
@@ -26,7 +24,7 @@ class CategoryPostsView(ListView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['category'] = self.category  # Используем уже сохранённый self.category
+        context['category'] = self.category 
         return context
 
 # Посты по тегу
