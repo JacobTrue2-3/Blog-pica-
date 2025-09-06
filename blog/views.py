@@ -110,7 +110,7 @@ class PostDeleteView(LoginRequiredMixin, DeleteView):
     context_object_name = 'post'
 
     def get_success_url(self):
-        return reverse('blog:post_list')
+        return reverse('blog:main_page')
 
 #Главная страница
 class MainPageView(TemplateView):

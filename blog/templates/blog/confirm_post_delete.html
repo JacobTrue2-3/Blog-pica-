@@ -1,14 +1,97 @@
 {% extends 'base.html' %}
+{% load django_bootstrap5 %}
 
-{% block title %}Удаление поста{% endblock title %}
+{% block title %}Удаление поста - {{ post.title }}{% endblock title %}
 
 {% block content %}
-    <h1>Удаление поста</h1>
-    <p>Вы уверены, что хотите удалить пост "<strong>{{ post.title }}</strong>"?</p>
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8 col-lg-6">
+            <!-- Основная карточка -->
+            <div class="card border-danger">
+                <div class="card-header bg-danger text-white text-center">
+                    <h4 class="card-title mb-0">
+                        <i class="bi bi-exclamation-octagon-fill me-2"></i>
+                        Удаление поста
+                    </h4>
+                </div>
+                
+                <div class="card-body">
+                    <!-- Предупреждение -->
+                    <div class="alert alert-warning mb-4">
+                        <div class="d-flex">
+                            <i class="bi bi-exclamation-triangle-fill me-3 fs-5"></i>
+                            <div>
+                                <h5 class="alert-heading mb-1">Необратимое действие</h5>
+                                <p class="mb-0">После удаления восстановить пост будет невозможно</p>
+                            </div>
+                        </div>
+                    </div>
 
-    <form method="POST">
-        {% csrf_token %}
-        <button type="submit">Удалить</button>
-    </form>
-    <a href="{% url 'blog:post_detail' post.slug %}">Отмена</a>
+                    <!-- Информация о посте -->
+                    <div class="mb-4">
+                        <h5 class="text-danger mb-3">Вы уверены, что хотите удалить этот пост?</h5>
+                        
+                        <div class="card border-0 bg-light">
+                            <div class="card-body">
+                                <h6 class="card-title text-danger fw-bold">{{ post.title }}</h6>
+                                
+                                {% if post.content|length > 150 %}
+                                    <p class="card-text text-muted mb-2">{{ post.content|slice:":150" }}...</p>
+                                {% else %}
+                                    <p class="card-text text-muted mb-2">{{ post.content }}</p>
+                                {% endif %}
+                                
+                                <div class="d-flex justify-content-between">
+                                    <small class="text-muted">
+                                        <i class="bi bi-calendar me-1"></i>
+                                        {{ post.created_at|date:"d.m.Y H:i" }}
+                                    </small>
+                                    {% if post.updated_at != post.created_at %}
+                                    <small class="text-muted">
+                                        <i class="bi bi-pencil me-1"></i>
+                                        Обновлен: {{ post.updated_at|date:"d.m.Y" }}
+                                    </small>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Форма удаления -->
+                    <form method="POST">
+                        {% csrf_token %}
+                        
+                        <div class="d-grid gap-2 d-md-flex justify-content-md-between">
+                            <!-- Кнопка отмены -->
+                            <a href="{% url 'blog:post_detail' post.slug %}" 
+                               class="btn btn-outline-secondary me-md-2">
+                                <i class="bi bi-arrow-left-circle me-2"></i>
+                                Отмена
+                            </a>
+                            
+                            <!-- Кнопка удаления -->
+                            <button type="submit" 
+                                    class="btn btn-danger"
+                                    onclick="return confirm('Вы точно хотите удалить этот пост? Это действие нельзя отменить.')">
+                                <i class="bi bi-trash3 me-2"></i>
+                                Удалить
+                            </button>
+                        </div>
+                    </form>
+                </div>
+                
+                <!-- Футер карточки -->
+                <div class="card-footer bg-transparent text-center">
+                    <small class="text-muted">
+                        <i class="bi bi-info-circle me-1"></i>
+                        Пожалуйста, подтвердите удаление
+                    </small>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
 {% endblock content %}
