@@ -5,7 +5,6 @@ from django.contrib.auth.forms import UserCreationForm
 from django.conf import settings
 from django.views.generic import CreateView, DetailView, View
 from django.contrib.auth.views import LoginView
-from django.contrib import messages
 from blog.models import Post
 
 User = get_user_model()
