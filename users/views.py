@@ -1,59 +1,66 @@
-from django.shortcuts import render, redirect, get_object_or_404
+from django.urls import reverse_lazy
+from django.shortcuts import get_object_or_404, redirect
+from django.contrib.auth import get_user_model, login, logout
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
-from django.contrib.auth import login, logout, get_user_model
-
-from config.settings import LOGIN_REDIRECT_URL
+from django.conf import settings
+from django.views.generic import CreateView, FormView, DetailView, View
 from blog.models import Post
-
 
 User = get_user_model()
 
-def register_view(request):
-    if request.method == 'POST':
-        form = UserCreationForm(request.POST)
 
-        if form.is_valid():
-            user = form.save()
-            login(request, user)
-            return redirect('blog:post_list') #поменять на профиль 
-        else:
-            return render(request, 'users/register.html', {'form': form})
-    form = UserCreationForm
+# Регистрация
+class RegisterView(CreateView):
+    model = User
+    form_class = UserCreationForm
+    template_name = 'users/register.html'
 
-    return render(request, 'users/register.html', {'form': form})
-    
+    def form_valid(self, form):
+        response = super().form_valid(form)
+        login(self.request, self.object)
+        return response
 
-def login_view(request):
-    if request.method == "POST":
-        form = AuthenticationForm(request, data=request.POST)  # <-- Исправлено здесь
-        if form.is_valid():
-            user = form.get_user()
-            login(request, user)
-            # return redirect('post_list') Ниже безопаснее использовать redirect на URL, который был запрошен
-            # при попытке входа, если он есть
-            # Если next не указан, то будет использоваться LOGIN_REDIRECT_URL из настроек
-            next_url = request.GET.get('next', LOGIN_REDIRECT_URL)  # '/post/add/'
-            if next_url == LOGIN_REDIRECT_URL:
-                return redirect(next_url, request.user.username)  # Переход на профиль пользователя
-            else: return redirect(next_url)
-        else:
-            return render(request, 'users/login.html', {'form': form})
-    
-    form = AuthenticationForm(request)  
-    return render(request, 'users/login.html', {'form': form})
+    def get_success_url(self):
+        return reverse_lazy('users:profile', kwargs={'user_username': self.object.username})
 
 
-def logout_view(request):
-    logout(request)
-    return redirect('blog:post_list')
+# Вход
+class LoginView(FormView):
+    template_name = 'users/login.html'
+    form_class = AuthenticationForm
 
-def user_profile(request, user_username):
-    user = get_object_or_404(User, username=user_username)
-    posts = Post.objects.filter(author=user).order_by('-created_at')
+    def get_form_kwargs(self):
+        """Передаем request в форму"""
+        kwargs = super().get_form_kwargs()
+        kwargs['data'] = self.request.POST or None
+        kwargs['request'] = self.request
+        return kwargs
 
-    context = {
-        'user': user,
-        'posts': posts,
-    }
+    def form_valid(self, form):
+        user = form.get_user()
+        login(self.request, user)
+        next_url = self.request.GET.get('next', settings.LOGIN_REDIRECT_URL)
+        if next_url == settings.LOGIN_REDIRECT_URL:
+            return redirect('users:profile', user_username=user.username)
+        return redirect(next_url)
 
-    return render(request, 'users/profile.html', context)
+
+# Выход
+class LogoutView(View):
+    def get(self, request, *args, **kwargs):
+        logout(request)
+        return redirect('blog:post_list')
+
+
+# Профиль пользователя
+class UserProfileView(DetailView):
+    model = User
+    template_name = 'users/profile.html'
+    slug_field = 'username'
+    slug_url_kwarg = 'user_username'
+    context_object_name = 'user'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['posts'] = Post.objects.filter(author=self.object).order_by('-created_at')
+        return context
