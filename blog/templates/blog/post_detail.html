@@ -44,37 +44,39 @@
                 
                 <div class="card-body">
                     <!-- Мета-информация -->
-                    <div class="d-flex flex-wrap align-items-center gap-2 mb-3">
-                        <div>
-                            <span class="badge bg-light text-dark">
-                                <a href="{% url 'users:profile' post.author.username %}" class="text-decoration-none text-dark">
-                                    <i class="bi bi-person-circle me-1"></i> {{ post.author.username }}
+                    <div class="d-flex justify-content-between align-items-start gap-2 mb-3">
+                        <div class="d-flex flex-wrap align-items-center gap-2">
+                            <div>
+                                <span class="badge bg-light text-dark">
+                                    <a href="{% url 'users:profile' post.author.username %}" class="text-decoration-none text-dark">
+                                        <i class="bi bi-person-circle me-1"></i> {{ post.author.username }}
+                                    </a>
+                                </span>
+                            </div>
+
+                            <!-- Категория -->
+                            <div>
+                                <a href="{{ post.category.get_absolute_url }}"
+                                   class="badge category-badge text-white text-decoration-none rounded-pill small">
+                                    <i class="bi bi-grid-1x2 me-1"></i>
+                                    {{ post.category.name }}
                                 </a>
-                            </span>
+                            </div>
                         </div>
 
-                        <!-- Категория -->
-                        <div>
-                            <a href="{{ post.category.get_absolute_url }}"
-                               class="badge category-badge text-white text-decoration-none rounded-pill small">
-                                <i class="bi bi-grid-1x2 me-1"></i>
-                                {{ post.category.name }}
-                            </a>
-                        </div>
-
-                        <!-- Дата -->
-                        <div>
+                        <!-- Даты (в правом углу) -->
+                        <div class="d-flex flex-column align-items-end gap-1">
                             <span class="badge bg-light text-dark">
-                                <i class="bi bi-calendar me-1"></i> {{ post.created_at|date:'d.m.Y H:i' }}
+                                <i class="bi bi-calendar me-1"></i> Создано: 
+                                <span class="date-field" data-date="{{ post.created_at|date:'c' }}">{{ post.created_at|date:'c' }}</span>
                             </span>
-                        </div>
-                        {% if post.updated_at != post.created_at %}
-                        <div>
+                            {% if post.updated_at != post.created_at %}
                             <span class="badge bg-light text-dark">
-                                <i class="bi bi-pencil-square me-1"></i> Обновлено: {{ post.updated_at|date:'d.m.Y H:i' }}
+                                <i class="bi bi-pencil-square me-1"></i> Обновлено: 
+                                <span class="date-field" data-date="{{ post.updated_at|date:'c' }}">{{ post.updated_at|date:'c' }}</span>
                             </span>
+                            {% endif %}
                         </div>
-                        {% endif %}
                     </div>
 
                     <!-- Изображение -->
