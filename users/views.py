@@ -1,9 +1,11 @@
 from django.urls import reverse_lazy
-from django.shortcuts import get_object_or_404, redirect
+from django.shortcuts import redirect
 from django.contrib.auth import get_user_model, login, logout
-from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
+from django.contrib.auth.forms import UserCreationForm
 from django.conf import settings
-from django.views.generic import CreateView, FormView, DetailView, View
+from django.views.generic import CreateView, DetailView, View
+from django.contrib.auth.views import LoginView
+from django.contrib import messages
 from blog.models import Post
 
 User = get_user_model()
@@ -14,35 +16,29 @@ class RegisterView(CreateView):
     model = User
     form_class = UserCreationForm
     template_name = 'users/register.html'
+    success_url = reverse_lazy('users:profile')
 
     def form_valid(self, form):
-        response = super().form_valid(form)
-        login(self.request, self.object)
-        return response
+        user = form.save()
+        login(self.request, user)
+        return redirect('users:profile', user_username=user.username)
 
-    def get_success_url(self):
-        return reverse_lazy('users:profile', kwargs={'user_username': self.object.username})
+    def get(self, request, *args, **kwargs):
+        if request.user.is_authenticated:
+            return redirect('users:profile', user_username=request.user.username)
+        return super().get(request, *args, **kwargs)
 
 
 # Вход
-class LoginView(FormView):
+class LoginView(LoginView):
     template_name = 'users/login.html'
-    form_class = AuthenticationForm
+    redirect_authenticated_user = True
 
-    def get_form_kwargs(self):
-        """Передаем request в форму"""
-        kwargs = super().get_form_kwargs()
-        kwargs['data'] = self.request.POST or None
-        kwargs['request'] = self.request
-        return kwargs
-
-    def form_valid(self, form):
-        user = form.get_user()
-        login(self.request, user)
+    def get_success_url(self):
         next_url = self.request.GET.get('next', settings.LOGIN_REDIRECT_URL)
         if next_url == settings.LOGIN_REDIRECT_URL:
-            return redirect('users:profile', user_username=user.username)
-        return redirect(next_url)
+            return reverse_lazy('users:profile', kwargs={'user_username': self.request.user.username})
+        return next_url
 
 
 # Выход
