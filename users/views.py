@@ -6,6 +6,7 @@ from django.conf import settings
 from django.views.generic import CreateView, DetailView, View
 from django.contrib.auth.views import LoginView
 from blog.models import Post
+from django.core.paginator import Paginator
 
 User = get_user_model()
 
@@ -57,5 +58,14 @@ class UserProfileView(DetailView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['posts'] = Post.objects.filter(author=self.object).order_by('-created_at')
+        # Получаем посты пользователя
+        posts = Post.objects.filter(author=self.object).order_by('-created_at')
+        # Настраиваем пагинацию
+        paginator = Paginator(posts, 6)  # 6 постов на страницу
+        page_number = self.request.GET.get('page')
+        page_obj = paginator.get_page(page_number)
+        # Добавляем в контекст
+        context['posts'] = page_obj
+        context['page_obj'] = page_obj
+        context['is_paginated'] = page_obj.has_other_pages()
         return context
