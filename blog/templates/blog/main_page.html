@@ -3,6 +3,7 @@
 {% load static %}
 {% block extra_css %}
 <link rel="stylesheet" href="{% static 'css/tags.css' %}">
+<link rel="stylesheet" href="{% static 'css/main-blog.css' %}">
 {% endblock %}
 
 {% block title %}Главная страница блога{% endblock title %}
@@ -149,35 +150,7 @@
     </div>
 </div>
 
-<style>
-.hover-shadow {
-    transition: all 0.3s ease;
-}
-.hover-shadow:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 0.5rem 1.5rem rgba(0, 0, 0, 0.15) !important;
-}
-.hover-text-primary:hover {
-    color: #0d6efd !important;
-}
-</style>
-
-<script>
-function toggleTags(postId) {
-    const tagsWrapper = document.getElementById(`tags-${postId}`);
-    const hiddenTags = tagsWrapper.querySelector('.hidden-tags');
-    const toggleButton = tagsWrapper.parentElement.querySelector('.tags-toggle');
-    
-    if (hiddenTags.style.display === 'none') {
-        hiddenTags.style.display = 'inline';
-        tagsWrapper.style.maxHeight = 'none';
-        toggleButton.textContent = '▲ Свернуть';
-    } else {
-        hiddenTags.style.display = 'none';
-        tagsWrapper.style.maxHeight = '32px';
-        const count = toggleButton.dataset.count;
-        toggleButton.textContent = `+${count} ещё`;
-    }
-}
-</script>
+{% block extra_js %}
+<script src="{% static 'js/main-blog.js' %}"></script>
+{% endblock %}
 {% endblock content %}
