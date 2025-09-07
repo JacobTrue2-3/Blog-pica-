@@ -1,4 +1,4 @@
-from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView, TemplateView
+from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.shortcuts import get_object_or_404, redirect
 from .models import Post, Category, Tag
@@ -11,6 +11,7 @@ class PostListView(ListView):
     template_name = 'blog/post_list.html'
     context_object_name = 'posts'
     queryset = Post.objects.filter(status='published').order_by('-created_at')
+    paginate_by = 16 # Количество постов на страницу
 
 # Посты по категории
 class CategoryPostsView(ListView):
@@ -113,10 +114,11 @@ class PostDeleteView(LoginRequiredMixin, DeleteView):
         return reverse('blog:main_page')
 
 #Главная страница
-class MainPageView(TemplateView):
+class MainPageView(ListView):
+    model = Post
     template_name = 'blog/main_page.html'
+    context_object_name = 'posts'
+    paginate_by = 9  # Количество постов на страницу
 
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context['posts'] = Post.objects.all().order_by('-created_at')
-        return context
+    def get_queryset(self):
+        return Post.objects.filter(status='published').order_by('-created_at')

@@ -24,7 +24,64 @@
         </div>
     </div>
 </div>
+{% if is_paginated %}
+<div class="row mt-5">
+    <div class="col-12">
+        <nav aria-label="Page navigation">
+            <ul class="pagination justify-content-center gap-2">
+                {% if page_obj.has_previous %}
+                    <li class="page-item">
+                        <a class="page-link rounded-pill px-3 py-2 text-primary fw-semibold" 
+                           href="?page={{ page_obj.previous_page_number }}" 
+                           aria-label="Previous">
+                            <i class="bi bi-chevron-left me-1"></i>Предыдущая
+                        </a>
+                    </li>
+                {% else %}
+                    <li class="page-item disabled">
+                        <span class="page-link rounded-pill px-3 py-2 text-muted">
+                            <i class="bi bi-chevron-left me-1"></i>Предыдущая
+                        </span>
+                    </li>
+                {% endif %}
 
+                {% for num in page_obj.paginator.page_range %}
+                    {% if page_obj.number == num %}
+                        <li class="page-item active" aria-current="page">
+                            <span class="page-link rounded-pill px-3 py-2 bg-primary border-primary">
+                                {{ num }}
+                            </span>
+                        </li>
+                    {% else %}
+                        <li class="page-item">
+                            <a class="page-link rounded-pill px-3 py-2 text-primary" 
+                               href="?page={{ num }}">
+                                {{ num }}
+                            </a>
+                        </li>
+                    {% endif %}
+                {% endfor %}
+
+                {% if page_obj.has_next %}
+                    <li class="page-item">
+                        <a class="page-link rounded-pill px-3 py-2 text-primary fw-semibold" 
+                           href="?page={{ page_obj.next_page_number }}" 
+                           aria-label="Next">
+                            Следующая<i class="bi bi-chevron-right ms-1"></i>
+                        </a>
+                    </li>
+                {% else %}
+                    <li class="page-item disabled">
+                        <span class="page-link rounded-pill px-3 py-2 text-muted">
+                            Следующая<i class="bi bi-chevron-right ms-1"></i>
+                        </span>
+                    </li>
+                {% endif %}
+            </ul>
+        </nav>
+    </div>
+</div>
+{% endif %}
 <style>
     /* Добавляем кастомные стили */
     .hover-shadow:hover {
