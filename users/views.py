@@ -45,7 +45,7 @@ class LoginView(LoginView):
 class LogoutView(View):
     def get(self, request, *args, **kwargs):
         logout(request)
-        return redirect('blog:post_list')
+        return redirect('blog:main_page')
 
 
 # Профиль пользователя

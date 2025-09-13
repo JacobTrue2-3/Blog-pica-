@@ -9,28 +9,55 @@
 {% block title %}Главная страница блога{% endblock title %}
 
 {% block content %}
-<div class="container py-5">
-    <!-- Заголовок и описание -->
-    <div class="row mb-5">
-        <div class="col-lg-8 mx-auto text-center">
-            <h1 class="display-6 fw-bold text-primary mb-3">Добро пожаловать в блог!</h1>
-            <p class="lead text-muted">Здесь вы найдете интересные статьи на различные темы. Присоединяйтесь к нашему сообществу!</p>
+<div class="container py-4">
+    <!-- Верхняя панель: кнопка добавления поста и поиск -->
+    <div class="row mb-4 align-items-center">
+        <!-- Кнопка добавления поста (слева) -->
+        <div class="col-6 col-md-4 col-lg-3">
+            <a href="{% url 'blog:post_add' %}" class="btn btn-primary btn-sm rounded-pill px-3">
+                <i class="bi bi-plus-circle me-1"></i>Добавить пост
+            </a>
+        </div>
+        <!-- Форма поиска (справа) -->
+        <div class="col-6 col-md-4 col-lg-3 ms-auto">
+            <form method="get" action="{% url 'blog:main_page' %}" class="d-flex align-items-center">
+                <div class="input-group shadow-sm">
+                    <input type="text" name="q" class="form-control rounded-pill-start border-end-0" 
+                           placeholder="Поиск..." 
+                           value="{{ request.GET.q|default_if_none:'' }}" 
+                           maxlength="100" aria-label="Поиск по блогу">
+                    <button type="submit" class="btn btn-primary rounded-pill-end border-start-0" aria-label="Найти посты">
+                        <i class="bi bi-search"></i>
+                    </button>
+                </div>
+                {% if request.GET.q %}
+                    <a href="{% url 'blog:main_page' %}" class="btn btn-outline-secondary btn-sm rounded-pill ms-2">
+                        <i class="bi bi-x-circle"></i>
+                    </a>
+                {% endif %}
+            </form>
         </div>
     </div>
 
-    <!-- Кнопка добавления поста -->
+    <!-- Заголовок и описание -->
     <div class="row mb-4">
-        <div class="col-12 text-center">
-            <a href="{% url 'blog:post_add' %}" class="btn btn-primary btn-lg rounded-pill px-4">
-                <i class="bi bi-plus-circle me-2"></i>Добавить новый пост
-            </a>
+        <div class="col-lg-8 mx-auto text-center">
+            <h1 class="display-5 fw-bold text-primary mb-2">Блог</h1>
+            <p class="text-muted">Исследуйте статьи на разные темы и делитесь своими идеями!</p>
         </div>
     </div>
+</div>
 
     <!-- Заголовок раздела -->
     <div class="row mb-4">
         <div class="col-12">
-            <h2 class="h3 border-bottom pb-2">Последние публикации</h2>
+            <h2 class="h3 border-bottom pb-2">
+                {% if request.GET.q %}
+                    Результаты поиска: "{{ request.GET.q }}"
+                {% else %}
+                    Последние публикации
+                {% endif %}
+            </h2>
         </div>
     </div>
 
@@ -106,10 +133,21 @@
                         <h3 class="h5 card-title mt-2">
                             <a href="{% url 'blog:post_detail' post.slug %}" 
                                 class="text-decoration-none text-dark hover-text-primary">
-                                {{ post.title }}
+                                {{ post.title|truncatechars:20 }}
                             </a>
                         </h3>
-
+                        <!-- Бейджи для автора и просмотра -->
+                        {% if request.user.is_authenticated %}
+                            {% if request.user == post.author %}
+                                <div class="badge bg-primary-subtle text-primary-emphasis rounded-pill small mb-2">
+                                    <i class="bi bi-person-circle me-1"></i>Мой пост
+                                </div>
+                            {% elif request.user in post.viewed_users.all %}
+                                <div class="badge bg-success-subtle text-success-emphasis rounded-pill small mb-2">
+                                    <i class="bi bi-check-circle me-1"></i>Просмотрено
+                                </div>
+                            {% endif %}                        
+                        {% endif %}
                         <!-- Краткий текст -->
                         <p class="card-text text-secondary flex-grow-1 small">
                             {{ post.text|truncatewords:20 }}
