@@ -51,6 +51,21 @@ class PostDetailView(DetailView):
     slug_field = 'slug'
     slug_url_kwarg = 'post_slug'
 
+    def get(self, request, *args, **kwargs):
+        response = super().get(request, *args, **kwargs)
+        post = self.get_object()
+        
+        # Проверяем, просматривал ли пользователь этот пост в текущей сессии
+        session_key = f'viewed_post_{post.id}'
+        if not request.session.get(session_key, False):
+            # Если пост еще не просмотрен в этой сессии, увеличиваем счетчик
+            post.views_count += 1
+            post.save()
+            # Помечаем пост как просмотренный в сессии
+            request.session[session_key] = True
+
+        return response
+
 # Создание поста
 class PostCreateView(LoginRequiredMixin, CreateView):
     model = Post

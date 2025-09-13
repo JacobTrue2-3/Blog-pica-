@@ -24,6 +24,7 @@ class Post(models.Model):
     updated_at = models.DateTimeField(auto_now=True, verbose_name="Дата обновления")
     author = models.ForeignKey(User, on_delete=models.CASCADE, related_name='posts', verbose_name="Автор") #CASCADE позволяет удалить пользователя, но посты останутся, SET_NULL позволяет удалить пользователя, но посты останутся
     status = models.CharField(choices=STATUS_CHOICES, default='draft', verbose_name="Статус")
+    views_count = models.PositiveIntegerField(default=0, verbose_name="Количество просмотров")
 
     class Meta:
         verbose_name= "Пост"
