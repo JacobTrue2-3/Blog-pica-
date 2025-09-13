@@ -4,8 +4,9 @@ from django.shortcuts import get_object_or_404, redirect
 from .models import Post, Category, Tag
 from .forms import PostForm
 from django.urls import reverse
+from django.db.models import Q
 
-# Все посты
+# Все посты (удалить после)
 class PostListView(ListView):
     model = Post
     template_name = 'blog/post_list.html'
@@ -54,15 +55,23 @@ class PostDetailView(DetailView):
     def get(self, request, *args, **kwargs):
         response = super().get(request, *args, **kwargs)
         post = self.get_object()
-        
-        # Проверяем, просматривал ли пользователь этот пост в текущей сессии
+        need_save = False
+
+        # Увеличиваем счетчик просмотров, если пост не просмотрен в сессии
         session_key = f'viewed_post_{post.id}'
         if not request.session.get(session_key, False):
-            # Если пост еще не просмотрен в этой сессии, увеличиваем счетчик
             post.views_count += 1
-            post.save()
-            # Помечаем пост как просмотренный в сессии
             request.session[session_key] = True
+            need_save = True
+
+        # Добавляем аутентифицированного пользователя в viewed_users
+        if request.user.is_authenticated and request.user != post.author:
+            post.viewed_users.add(request.user)
+            need_save = True
+
+        # Сохраняем изменения, если они есть
+        if need_save:
+            post.save()
 
         return response
 
@@ -136,4 +145,10 @@ class MainPageView(ListView):
     paginate_by = 9  # Количество постов на страницу
 
     def get_queryset(self):
-        return Post.objects.filter(status='published').order_by('-created_at')
+        queryset = Post.objects.filter(status='published').order_by('-created_at')
+        query = self.request.GET.get('q')
+        if query and query.strip():
+            queryset = queryset.filter(
+                Q(title__icontains=query) | Q(text__icontains=query)
+            )
+        return queryset
