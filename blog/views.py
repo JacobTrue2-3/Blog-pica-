@@ -142,13 +142,37 @@ class MainPageView(ListView):
     model = Post
     template_name = 'blog/main_page.html'
     context_object_name = 'posts'
-    paginate_by = 9  # Количество постов на страницу
+    paginate_by = 9
 
     def get_queryset(self):
         queryset = Post.objects.filter(status='published').order_by('-created_at')
         query = self.request.GET.get('q')
+        search_category = self.request.GET.get('search_category')
+        search_tag = self.request.GET.get('search_tag')
+
         if query and query.strip():
-            queryset = queryset.filter(
-                Q(title__icontains=query) | Q(text__icontains=query)
-            )
+            # Нормализуем запрос: удаляем лишние пробелы
+            query = query.strip()
+            # Базовые условия поиска
+            search_conditions = Q()
+            # Если чекбоксы не отмечены, ищем только по заголовку и тексту
+            if not (search_category or search_tag):
+                search_conditions = Q(title__icontains=query) | Q(text__icontains=query)
+            else:
+                # Если отмечены чекбоксы, добавляем поиск по категориям и/или тегам
+                if search_category:
+                    search_conditions |= Q(category__name__icontains=query)
+                if search_tag:
+                    search_conditions |= Q(tags__name__icontains=query)
+            queryset = queryset.filter(search_conditions)
+            if search_tag:
+                queryset = queryset.distinct()
+
         return queryset
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['query'] = self.request.GET.get('q', '')
+        context['search_category'] = self.request.GET.get('search_category', False)
+        context['search_tag'] = self.request.GET.get('search_tag', False)
+        return context
