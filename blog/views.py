@@ -4,7 +4,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.shortcuts import get_object_or_404, redirect
 from .models import Post, Category, Tag
 from .forms import PostForm
-from django.urls import reverse
+from django.urls import reverse, reverse_lazy
 from django.db.models import Q
 
 # Все посты (удалить после)
@@ -81,6 +81,7 @@ class PostCreateView(LoginRequiredMixin, CreateView):
     model = Post
     form_class = PostForm
     template_name = 'blog/post_form.html'
+    login_url = reverse_lazy('users:login') 
     extra_context = {
         'title': "Создать пост",
         'submit_button_text': "Создать",
