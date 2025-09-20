@@ -1,4 +1,5 @@
-from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
+from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView, View
+from django.http import JsonResponse
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.shortcuts import get_object_or_404, redirect
 from .models import Post, Category, Tag
@@ -176,3 +177,37 @@ class MainPageView(ListView):
         context['search_category'] = self.request.GET.get('search_category', False)
         context['search_tag'] = self.request.GET.get('search_tag', False)
         return context
+
+
+class LikeDislikePostView(LoginRequiredMixin, View):
+    def post(self, request, post_id):
+        post = get_object_or_404(Post, id=post_id)
+        user = request.user
+        action = request.POST.get('action')
+
+        if action == 'like':
+            if user in post.liked_users.all():
+                post.liked_users.remove(user)  # Удаляем лайк
+                action_taken = 'unliked'
+            else:
+                post.liked_users.add(user)  # Добавляем лайк
+                post.disliked_users.remove(user)  # Удаляем дизлайк, если был
+                action_taken = 'liked'
+        elif action == 'dislike':
+            if user in post.disliked_users.all():
+                post.disliked_users.remove(user)  # Удаляем дизлайк
+                action_taken = 'undisliked'
+            else:
+                post.disliked_users.add(user)  # Добавляем дизлайк
+                post.liked_users.remove(user)  # Удаляем лайк, если был
+                action_taken = 'disliked'
+        else:
+            return JsonResponse({'status': 'error', 'message': 'Invalid action'}, status=400)
+
+        post.save()
+        return JsonResponse({
+            'status': 'success',
+            'action': action_taken,
+            'like_count': post.liked_users.count(),
+            'dislike_count': post.disliked_users.count(),
+        })

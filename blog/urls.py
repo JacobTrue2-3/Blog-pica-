@@ -12,5 +12,6 @@ urlpatterns = [
     path('posts/category/<slug:category_slug>/', views.CategoryPostsView.as_view(), name="category_posts"),
     path('posts/<slug:post_slug>/', views.PostDetailView.as_view(), name="post_detail"),
     path('posts/tag/<slug:tag_slug>/', views.TagPostsView.as_view(), name="tag_posts"),
+    path('posts/<int:post_id>/like-dislike/', views.LikeDislikePostView.as_view(), name="post_like"),
     path('',views.MainPageView.as_view(), name='main_page'),
 ]

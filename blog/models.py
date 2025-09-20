@@ -26,6 +26,8 @@ class Post(models.Model):
     status = models.CharField(choices=STATUS_CHOICES, default='draft', verbose_name="Статус")
     views_count = models.PositiveIntegerField(default=0, verbose_name="Количество просмотров")
     viewed_users = models.ManyToManyField(User, related_name='viewed_posts', blank=True, verbose_name="Просмотренные пользователи")
+    liked_users = models.ManyToManyField(User, related_name='liked_posts', blank=True, verbose_name="Лайки")
+    disliked_users = models.ManyToManyField(User, related_name='disliked_posts', blank=True, verbose_name="Дизлайки")
 
     class Meta:
         verbose_name= "Пост"
@@ -80,3 +82,5 @@ class Tag(models.Model):
 
     def get_absolute_url(self):
         return reverse('blog:tag_posts', args=[self.slug])
+
+
