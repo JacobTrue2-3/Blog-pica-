@@ -4,8 +4,8 @@ from .import views
 
 app_name = 'blog'
 
-urlpatterns = [    
-    path('posts/', views.PostListView.as_view(), name="post_list"),    
+urlpatterns = [
+    path('posts/', views.PostListView.as_view(), name="post_list"),
     path('posts/add/', views.PostCreateView.as_view(), name="post_add"),
     path('posts/<int:pk>/edit/', views.PostUpdateView.as_view(), name="update_post"),
     path('posts/<int:pk>/delete/', views.PostDeleteView.as_view(), name="remove_post"),
@@ -13,5 +13,8 @@ urlpatterns = [
     path('posts/<slug:post_slug>/', views.PostDetailView.as_view(), name="post_detail"),
     path('posts/tag/<slug:tag_slug>/', views.TagPostsView.as_view(), name="tag_posts"),
     path('posts/<int:post_id>/like-dislike/', views.LikeDislikePostView.as_view(), name="post_like"),
-    path('',views.MainPageView.as_view(), name='main_page'),
+    path('posts/<int:post_id>/comment/', views.CommentCreateView.as_view(), name="comment_create"),
+    path('comments/<int:comment_id>/edit/', views.CommentUpdateView.as_view(), name="comment_update"),
+    path('comments/<int:comment_id>/delete/', views.CommentDeleteView.as_view(), name="comment_delete"),
+    path('', views.MainPageView.as_view(), name='main_page'),
 ]

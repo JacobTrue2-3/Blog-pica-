@@ -2,7 +2,7 @@ from django.views.generic import ListView, DetailView, CreateView, UpdateView, D
 from django.http import JsonResponse
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.shortcuts import get_object_or_404, redirect
-from .models import Post, Category, Tag
+from .models import Post, Category, Tag, Comment
 from .forms import PostForm
 from django.urls import reverse, reverse_lazy
 from django.db.models import Q
@@ -52,6 +52,11 @@ class PostDetailView(DetailView):
     context_object_name = 'post'
     slug_field = 'slug'
     slug_url_kwarg = 'post_slug'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['comments'] = self.object.comments.all()  # Добавляем комментарии
+        return context
 
     def get(self, request, *args, **kwargs):
         response = super().get(request, *args, **kwargs)
@@ -212,3 +217,65 @@ class LikeDislikePostView(LoginRequiredMixin, View):
             'like_count': post.liked_users.count(),
             'dislike_count': post.disliked_users.count(),
         })
+    
+# Создание комментария
+class CommentCreateView(LoginRequiredMixin, View):
+    def post(self, request, post_id):
+        post = get_object_or_404(Post, id=post_id)
+        text = request.POST.get('text')
+        if not text:
+            return JsonResponse({'status': 'error', 'message': 'Комментарий не может быть пустым'}, status=400)
+
+        comment = Comment.objects.create(
+            post=post,
+            author=request.user,
+            text=text
+        )
+        return JsonResponse({
+            'status': 'success',
+            'comment': {
+                'id': comment.id,
+                'text': comment.text,
+                'author': comment.author.username,
+                'created_at': comment.created_at.strftime('%Y-%m-%d %H:%M:%S'),
+                'is_author': True  # Для управления кнопками редактирования/удаления
+            }
+        })
+
+# Редактирование комментария
+class CommentUpdateView(LoginRequiredMixin, View):
+    def post(self, request, comment_id):
+        try:
+            comment = get_object_or_404(Comment, id=comment_id)
+            if comment.author != request.user:
+                return JsonResponse({'status': 'error', 'message': 'Вы не можете редактировать этот комментарий'}, status=403)
+
+            text = request.POST.get('text')
+            if not text or not text.strip():
+                return JsonResponse({'status': 'error', 'message': 'Комментарий не может быть пустым'}, status=400)
+
+            comment.text = text.strip()
+            comment.is_edited = True  # Устанавливаем is_edited=True при редактировании
+            comment.save()
+            return JsonResponse({
+                'status': 'success',
+                'comment': {
+                    'id': comment.id,
+                    'text': comment.text,
+                    'author': comment.author.username,
+                    'created_at': comment.created_at.strftime('%Y-%m-%d %H:%M:%S'),
+                    'is_edited': comment.is_edited
+                }
+            })
+        except Exception as e:
+            return JsonResponse({'status': 'error', 'message': f'Произошла ошибка: {str(e)}'}, status=500)
+
+# Удаление комментария
+class CommentDeleteView(LoginRequiredMixin, View):
+    def post(self, request, comment_id):
+        comment = get_object_or_404(Comment, id=comment_id)
+        if comment.author != request.user:
+            return JsonResponse({'status': 'error', 'message': 'Вы не можете удалить этот комментарий'}, status=403)
+
+        comment.delete()
+        return JsonResponse({'status': 'success', 'comment_id': comment_id})

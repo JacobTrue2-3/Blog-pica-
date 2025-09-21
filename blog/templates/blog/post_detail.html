@@ -6,7 +6,6 @@
 
 {% block content %}
 <div class="container mt-4">
-    {% csrf_token %}
     <div class="row justify-content-center">
         <div class="col-lg-8">
             <!-- Навигация и кнопки -->
@@ -22,11 +21,9 @@
                 <div class="card-header bg-primary bg-gradient text-white">
                     <div class="d-flex justify-content-between align-items-center">
                         <h1 class="h4 mb-0">{{ post.title }}</h1>
-                        
                         {% if request.user == post.author %}
                             Статус: {{ post.get_status_display }}
                         {% endif %}
-
                         {% if request.user == post.author %}
                         <div class="dropdown">
                             <button class="btn btn-sm btn-light dropdown-toggle" type="button" id="postActions" data-bs-toggle="dropdown" aria-expanded="false">
@@ -37,7 +34,7 @@
                                 <li><a class="dropdown-item text-danger" href="{% url 'blog:remove_post' post.id %}"><i class="bi bi-trash me-2"></i>Удалить</a></li>
                                 <li><hr class="dropdown-divider"></li>
                                 <li><a class="dropdown-item" href="#"><i class="bi bi-share me-2"></i>Поделиться</a></li>
-                            </ul>                            
+                            </ul>
                         </div>
                         {% endif %}
                     </div>
@@ -54,7 +51,6 @@
                                     </a>
                                 </span>
                             </div>
-
                             <!-- Категория -->
                             <div>
                                 <a href="{{ post.category.get_absolute_url }}"
@@ -64,7 +60,6 @@
                                 </a>
                             </div>
                         </div>
-
                         <!-- Даты (в правом углу) -->
                         <div class="d-flex flex-column align-items-end gap-1">
                             <span class="badge bg-light text-dark">
@@ -98,8 +93,8 @@
                                class="badge tag-badge text-decoration-none rounded-pill small me-1 mb-1">
                                 <i class="bi bi-tag me-1"></i>{{ tag.name }}
                             </a>
-                        </div>
                         {% endfor %}
+                    </div>
                     {% endif %}
                 </div>
                 
@@ -138,18 +133,67 @@
                 <!-- Комментарии -->
                 <div class="card mt-4 shadow-sm">
                     <div class="card-header bg-light">
-                        <h2 class="h5 mb-0"><i class="bi bi-chat-square-text me-2"></i>Комментарии (0)</h2>
+                        <h2 class="h5 mb-0"><i class="bi bi-chat-square-text me-2"></i>Комментарии ({{ comments.count }})</h2>
                     </div>
                     <div class="card-body">
-                        <div class="text-center py-4 text-muted">
-                            Пока нет комментариев. Будьте первым!
-                        </div>
-                        <form>
-                            <div class="mb-3">
-                                <textarea class="form-control" rows="3" placeholder="Ваш комментарий..."></textarea>
+                        {% if comments %}
+                            <div id="comment-list">
+                                {% for comment in comments %}
+                                    <div class="comment mb-3" data-comment-id="{{ comment.id }}" data-text="{{ comment.text|escapejs }}">
+                                        <div class="d-flex justify-content-between align-items-start">
+                                            <div>
+                                                <strong>{{ comment.author.username }}</strong>
+                                                <small class="text-muted">{{ comment.created_at|date:"d.m.Y H:i" }}</small>
+                                                <p class="mb-1">{{ comment.text|linebreaks }}</p>
+                                            </div>
+                                            {% if request.user == comment.author %}
+                                                <div class="dropdown">
+                                                    <button class="btn btn-sm btn-light dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                                        <i class="bi bi-three-dots-vertical"></i>
+                                                    </button>
+                                                    <ul class="dropdown-menu">
+                                                        <li>
+                                                            <a class="dropdown-item edit-comment"
+                                                               href="#"
+                                                               data-comment-id="{{ comment.id }}"
+                                                               data-url="{% url 'blog:comment_update' comment_id=comment.id %}">
+                                                               Редактировать
+                                                            </a>
+                                                        </li>
+                                                        <li>
+                                                            <a class="dropdown-item text-danger delete-comment"
+                                                               href="#"
+                                                               data-comment-id="{{ comment.id }}"
+                                                               data-url="{% url 'blog:comment_delete' comment_id=comment.id %}">
+                                                               Удалить
+                                                            </a>
+                                                        </li>
+                                                    </ul>
+                                                </div>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                {% endfor %}
                             </div>
-                            <button type="submit" class="btn btn-primary btn-sm">Отправить</button>
-                        </form>
+                        {% else %}
+                            <div class="text-center py-4 text-muted">
+                                Пока нет комментариев. Будьте первым!
+                            </div>
+                        {% endif %}
+                        {% if request.user.is_authenticated %}
+                            <form id="comment-form" data-url="{% url 'blog:comment_create' post_id=post.id %}">
+                                {% csrf_token %}
+                                <div class="mb-3">
+                                    <textarea class="form-control" name="text" rows="3" placeholder="Ваш комментарий..." required></textarea>
+                                </div>
+                                <button type="submit" class="btn btn-primary btn-sm">Отправить</button>
+                            </form>
+                        {% else %}
+                            <div class="text-center py-4">
+                                <p class="text-muted">Войдите, чтобы оставить комментарий.</p>
+                                <a href="{% url 'users:login' %}" class="btn btn-primary btn-sm">Войти</a>
+                            </div>
+                        {% endif %}
                     </div>
                 </div>
             </div>
@@ -169,10 +213,10 @@
             border-radius: 0.25rem;
             margin: 1rem 0;
         }
+        .comment {
+            border-bottom: 1px solid #e9ecef;
+            padding-bottom: 10px;
+        }
     </style>
 </div>
 {% endblock content %}
-
-{% block extra_js %}
-<script src="{% static 'js/like-dislike.js' %}"></script>
-{% endblock extra_js %}
