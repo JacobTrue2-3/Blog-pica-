@@ -174,11 +174,7 @@
                                         </div>
                                     </div>
                                 {% endfor %}
-                            </div>
-                        {% else %}
-                            <div class="text-center py-4 text-muted">
-                                Пока нет комментариев. Будьте первым!
-                            </div>
+                            </div>                        
                         {% endif %}
                         {% if request.user.is_authenticated %}
                             <form id="comment-form" data-url="{% url 'blog:comment_create' post_id=post.id %}">
@@ -220,3 +216,7 @@
     </style>
 </div>
 {% endblock content %}
+{% block extra_js %}
+<script src="{% static 'js/like-dislike.js' %}"></script>
+<script src="{% static 'js/coment.js' %}"></script>
+{% endblock extra_js %}
