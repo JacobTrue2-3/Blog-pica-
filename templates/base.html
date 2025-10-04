@@ -1,7 +1,6 @@
 {% load static %}
 {% load django_bootstrap5 %}
 
-
 <!DOCTYPE html>
 <html>
 <head>
@@ -35,6 +34,12 @@
                             <a class="nav-link {% if request.resolver_match.url_name == 'post_list' %}active{% endif %}" 
                                 href="{% url 'blog:post_list' %}">
                                 <i class="bi bi-list-ul"></i> Посты
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link {% if request.resolver_match.url_name == 'favorite_posts' %}active{% endif %}" 
+                                href="{% url 'blog:favorite_posts' %}">
+                                <i class="bi bi-star"></i> Избранное
                             </a>
                         </li>
                         <li class="nav-item">

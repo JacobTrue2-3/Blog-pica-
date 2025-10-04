@@ -1,5 +1,4 @@
 from django.urls import path
-
 from .import views 
 
 app_name = 'blog'
@@ -16,5 +15,7 @@ urlpatterns = [
     path('posts/<int:post_id>/comment/', views.CommentCreateView.as_view(), name="comment_create"),
     path('comments/<int:comment_id>/edit/', views.CommentUpdateView.as_view(), name="comment_update"),
     path('comments/<int:comment_id>/delete/', views.CommentDeleteView.as_view(), name="comment_delete"),
+    path('posts/<int:post_id>/favorite/', views.PostFavoriteToggleView.as_view(), name="post_favorite"),
+    path('favorites/', views.FavoritePostsView.as_view(), name="favorite_posts"),
     path('', views.MainPageView.as_view(), name='main_page'),
 ]

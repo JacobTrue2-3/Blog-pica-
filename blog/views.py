@@ -279,3 +279,35 @@ class CommentDeleteView(LoginRequiredMixin, View):
 
         comment.delete()
         return JsonResponse({'status': 'success', 'comment_id': comment_id})
+
+
+# Переключение избранного для поста
+class PostFavoriteToggleView(LoginRequiredMixin, View):
+    def post(self, request, post_id):
+        if not request.user.is_authenticated:
+            return JsonResponse({'status': 'error', 'message': 'Требуется авторизация'}, status=401)
+
+        post = get_object_or_404(Post, id=post_id)
+        user = request.user
+        if user in post.favorites_users.all():
+            post.favorites_users.remove(user)
+            action_taken = 'removed'
+        else:
+            post.favorites_users.add(user)
+            action_taken = 'added'
+        post.save()
+        return JsonResponse({
+            'status': 'success',
+            'action': action_taken,
+            'favorites_count': post.favorites_users.count(),
+        })
+
+# Страница избранных постов пользователя
+class FavoritePostsView(LoginRequiredMixin, ListView):
+    model = Post
+    template_name = 'blog/favorite_posts.html'  # Новый шаблон, создадим ниже
+    context_object_name = 'posts'
+    paginate_by = 9  # Как на главной, для consistency
+
+    def get_queryset(self):
+        return self.request.user.favorite_posts.filter(status='published').order_by('-created_at')

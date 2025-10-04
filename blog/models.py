@@ -28,6 +28,7 @@ class Post(models.Model):
     viewed_users = models.ManyToManyField(User, related_name='viewed_posts', blank=True, verbose_name="Просмотренные пользователи")
     liked_users = models.ManyToManyField(User, related_name='liked_posts', blank=True, verbose_name="Лайки")
     disliked_users = models.ManyToManyField(User, related_name='disliked_posts', blank=True, verbose_name="Дизлайки")
+    favorites_users = models.ManyToManyField(User, related_name='favorite_posts', blank=True, verbose_name="В избранном у")
 
     class Meta:
         verbose_name= "Пост"
