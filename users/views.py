@@ -35,10 +35,10 @@ class LoginView(LoginView):
     redirect_authenticated_user = True
 
     def get_success_url(self):
-        next_url = self.request.GET.get('next', settings.LOGIN_REDIRECT_URL)
-        if next_url == settings.LOGIN_REDIRECT_URL:
-            return reverse_lazy('users:profile', kwargs={'user_username': self.request.user.username})
-        return next_url
+        next_url = self.request.GET.get('next')
+        if next_url and next_url.startswith('/'):  # Проверяем, что URL валиден
+            return next_url
+        return reverse_lazy('users:profile', kwargs={'user_username': self.request.user.username})
 
 
 # Выход

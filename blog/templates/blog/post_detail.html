@@ -29,6 +29,9 @@
                             <button class="btn btn-link text-white favorite-toggle" 
                                     data-post-id="{{ post.id }}" style="font-size: 1.5rem;">
                                 <i class="bi bi-star {% if request.user in post.favorites_users.all %}bi-star-fill text-warning{% else %}text-muted{% endif %}"></i>
+                                <span class="ms-1 small">
+                                    {% if request.user in post.favorites_users.all %}В избранном{% else %}В избранное{% endif %}
+                                </span>
                             </button>
                             {% endif %}
                             {% if request.user == post.author %}
@@ -127,9 +130,6 @@
                                     {% if not request.user.is_authenticated %}disabled{% endif %}>
                                 <i class="bi bi-hand-thumbs-down"></i>
                                 <span class="dislike-count">{{ post.disliked_users.count }}</span>
-                            </button>
-                            <button class="btn btn-sm btn-outline-secondary">
-                                <i class="bi bi-chat-left-text"></i> Комментировать
                             </button>
                         </div>
                         <div class="text-muted small">

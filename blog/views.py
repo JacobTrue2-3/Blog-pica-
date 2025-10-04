@@ -6,6 +6,10 @@ from .models import Post, Category, Tag, Comment
 from .forms import PostForm
 from django.urls import reverse, reverse_lazy
 from django.db.models import Q
+from django.utils.decorators import method_decorator
+from django.contrib.auth.decorators import login_required
+from django.conf import settings
+
 
 # Все посты (удалить после)
 class PostListView(ListView):
@@ -80,6 +84,18 @@ class PostDetailView(DetailView):
             post.save()
 
         return response
+
+    @method_decorator(login_required, name='dispatch')
+    def dispatch(self, request, *args, **kwargs):
+        slug = self.kwargs.get('post_slug')
+        if not request.user.is_authenticated:
+            # Проверяем, существует ли пост перед редиректом
+            try:
+                get_object_or_404(Post, slug=slug)
+                return redirect(f'/users/login/?next={request.path}')
+            except:
+                return redirect('blog:main_page')  # Если пост не найден, на главную
+        return super().dispatch(request, *args, **kwargs)
 
 # Создание поста
 class PostCreateView(LoginRequiredMixin, CreateView):
