@@ -91,12 +91,20 @@ class Comment(models.Model):
     text = models.TextField(verbose_name="Текст комментария")
     created_at = models.DateTimeField(auto_now_add=True, verbose_name="Дата создания")
     updated_at = models.DateTimeField(auto_now=True, verbose_name="Дата обновления")
+    parent = models.ForeignKey('self', null=True, blank=True, on_delete=models.CASCADE, related_name='replies', verbose_name="Родительский комментарий")
+    is_edited = models.BooleanField(default=False, verbose_name="Отредактирован")
+    level = models.PositiveIntegerField(default=0, verbose_name="Уровень вложенности")  # Новое поле
 
     class Meta:
         verbose_name = "Комментарий"
         verbose_name_plural = "Комментарии"
         db_table = "blog_comments"
         ordering = ['created_at']
+
+    def save(self, *args, **kwargs):
+        if self.parent:
+            self.level = self.parent.level + 1
+        super().save(*args, **kwargs)
 
     def __str__(self):
         return f"Комментарий от {self.author.username} к {self.post.title}"

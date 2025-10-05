@@ -1,0 +1,59 @@
+<div class="comment mb-3" data-comment-id="{{ comment.id }}" data-text="{{ comment.text|escapejs }}" data-level="{{ comment.level }}">
+    <div class="d-flex">
+        <!-- Отступы для уровней вложенности -->
+        <div class="comment-indent" style="width: {% widthratio comment.level 1 30 %}px;"></div>
+        
+        <div class="comment-content flex-grow-1 {% if comment.level > 0 %}border-start border-2 ps-3{% endif %}">
+            <div class="d-flex justify-content-between align-items-start">
+                <div class="w-100">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <strong class="comment-author">{{ comment.author.username }}</strong>
+                            <small class="text-muted ms-2">
+                                {{ comment.created_at|date:"d.m.Y H:i" }}{% if comment.is_edited %} (Редактирован){% endif %}
+                            </small>
+                        </div>
+                        {% if request.user == comment.author %}
+                        <div class="dropdown">
+                            <button class="btn btn-sm btn-light dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                <i class="bi bi-three-dots-vertical"></i>
+                            </button>
+                            <ul class="dropdown-menu">
+                                <li>
+                                    <a class="dropdown-item edit-comment" href="#" data-comment-id="{{ comment.id }}" data-url="{% url 'blog:comment_update' comment_id=comment.id %}">
+                                        Редактировать
+                                    </a>
+                                </li>
+                                <li>
+                                    <a class="dropdown-item text-danger delete-comment" href="#" data-comment-id="{{ comment.id }}" data-url="{% url 'blog:comment_delete' comment_id=comment.id %}">
+                                        Удалить
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
+                        {% endif %}
+                    </div>
+                    
+                    <p class="mb-1 comment-text mt-2">{{ comment.text|linebreaks }}</p>
+                    
+                    {% if request.user.is_authenticated and comment.level < 5 %} {# Ограничиваем вложенность #}
+                    <button class="btn btn-sm btn-outline-primary reply-comment mt-1" 
+                            data-comment-id="{{ comment.id }}" 
+                            data-author="{{ comment.author.username }}">
+                        <i class="bi bi-reply me-1"></i>Ответить
+                    </button>
+                    {% endif %}
+                </div>
+            </div>
+            
+            <!-- Рекурсивно включаем ответы -->
+            {% if replies %}
+            <div class="replies mt-3">
+                {% for reply_data in replies %}
+                    {% include 'blog/comment_item.html' with comment=reply_data.comment replies=reply_data.replies %}
+                {% endfor %}
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
