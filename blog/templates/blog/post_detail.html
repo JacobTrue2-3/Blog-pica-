@@ -267,17 +267,17 @@
                                 </div>
                                 
                                 <!-- Преview ответа -->
-                                <div id="reply-preview" class="mb-3 p-3 bg-white rounded-3 border" style="display: none;">
-                                    <div class="d-flex justify-content-between align-items-start">
-                                        <div class="flex-grow-1">
-                                            <small class="text-muted d-block mb-1">Ответ на комментарий:</small>
-                                            <div id="reply-preview-content" class="small"></div>
-                                        </div>
-                                        <button type="button" id="cancel-reply" 
-                                                class="btn-close btn-close-sm" 
-                                                aria-label="Отмена"></button>
-                                    </div>
-                                </div>
+                               <div id="reply-preview" class="mb-3 p-3 bg-white rounded-3 border" style="display: none;">
+    <div class="d-flex justify-content-between align-items-start">
+        <div class="flex-grow-1">
+            <small class="text-muted d-block mb-1">Ответ пользователю:</small>
+            <div id="reply-preview-content" class="small text-primary"></div>
+        </div>
+        <button type="button" id="cancel-reply" 
+                class="btn-close btn-close-sm" 
+                aria-label="Отмена"></button>
+    </div>
+</div>
                                 
                                 <div class="d-flex justify-content-between align-items-center">
                                     <small class="text-muted">
@@ -394,39 +394,88 @@
         color: white;
     }
     
-    /* КОММЕНТАРИИ - ПОЛНОСТЬЮ АДАПТИВНЫЕ */
-    .comments-container {
-        /* Убираем все ограничения по высоте */
-        max-height: none;
-        overflow-y: visible;
-    }
 
-    /* Добавляем отступы между комментариями */
-    .comment {
-        margin-bottom: 1.5rem;
-        padding-bottom: 1rem;
-        border-bottom: 1px solid #e9ecef;
-    }
+/* Улучшенные стили для комментариев */
+.comments-container {
+    position: relative;
+    width: 100%;
+}
 
-    .comment:last-child {
-        border-bottom: none;
-        margin-bottom: 0;
+.comment {
+    margin-bottom: 1rem;
+    position: relative;
+    width: 100%;
+}
+
+.comment-inner {
+    display: flex;
+    width: 100%;
+}
+
+.comment-indent {
+    flex-shrink: 0;
+    width: 40px; /* Фиксированная ширина отступа */
+}
+
+.comment-content {
+    flex: 1;
+    min-width: 0; /* Важно для flexbox */
+}
+
+.comment-card {
+    border: 1px solid #e9ecef;
+    border-radius: 12px;
+    padding: 1.25rem;
+    background: #fff;
+    position: relative;
+    margin-bottom: 1rem;
+}
+
+/* Зигзагообразное расположение */
+.comment[data-level="0"] .comment-card {
+    margin-left: 0;
+    border-left: 3px solid #667eea;
+}
+
+.comment[data-level="1"] .comment-card {
+    margin-left: 40px;
+    border-left: 3px solid #764ba2;
+}
+
+.comment[data-level="2"] .comment-card {
+    margin-left: 80px;
+    border-left: 3px solid #f093fb;
+}
+
+.comment[data-level="3"] .comment-card {
+    margin-left: 120px;
+    border-left: 3px solid #f5576c;
+}
+
+/* Ограничиваем максимальный отступ */
+.comment[data-level="4"] .comment-card {
+    margin-left: 120px; /* Максимальный отступ */
+    border-left: 3px solid #4facfe;
+}
+
+/* Убираем сложные соединительные линии */
+.comment-connector {
+    display: none; /* Временно убираем */
+}
+
+/* Адаптивность */
+@media (max-width: 768px) {
+    .comment[data-level="1"] .comment-card,
+    .comment[data-level="2"] .comment-card,
+    .comment[data-level="3"] .comment-card,
+    .comment[data-level="4"] .comment-card {
+        margin-left: 20px !important;
     }
     
-    /* Адаптивность */
-    @media (max-width: 768px) {
-        .post-header {
-            padding: 1.5rem;
-        }
-        
-        .card-body {
-            padding: 1rem;
-        }
-        
-        .comments-container {
-            max-height: none;
-        }
+    .comment-indent {
+        width: 20px;
     }
+}
     
     /* Анимации */
     @keyframes fadeIn {

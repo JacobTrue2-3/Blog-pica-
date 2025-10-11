@@ -93,7 +93,7 @@ class Comment(models.Model):
     updated_at = models.DateTimeField(auto_now=True, verbose_name="Дата обновления")
     parent = models.ForeignKey('self', null=True, blank=True, on_delete=models.CASCADE, related_name='replies', verbose_name="Родительский комментарий")
     is_edited = models.BooleanField(default=False, verbose_name="Отредактирован")
-    level = models.PositiveIntegerField(default=0, verbose_name="Уровень вложенности")  # Новое поле
+    level = models.PositiveIntegerField(default=0, verbose_name="Уровень вложенности")
 
     class Meta:
         verbose_name = "Комментарий"
@@ -103,7 +103,14 @@ class Comment(models.Model):
 
     def save(self, *args, **kwargs):
         if self.parent:
-            self.level = self.parent.level + 1
+            # Вычисляем уровень, проходя по всей цепочке parent
+            current = self.parent
+            self.level = 0
+            while current:
+                self.level += 1
+                current = current.parent
+        else:
+            self.level = 0  # Корневой комментарий
         super().save(*args, **kwargs)
 
     def __str__(self):

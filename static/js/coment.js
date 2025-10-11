@@ -20,56 +20,102 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // === Функция для создания HTML комментария ===
     function createCommentHTML(commentData, isReply = false) {
-        const indent = commentData.level * 30;
-        const hasBorder = commentData.level > 0;
-        
-        return `
-            <div class="comment mb-3" data-comment-id="${commentData.id}" data-text="${commentData.text.replace(/"/g, '&quot;')}" data-level="${commentData.level}">
-                <div class="d-flex">
-                    <div class="comment-indent" style="width: ${indent}px;"></div>
-                    <div class="comment-content flex-grow-1 ${hasBorder ? 'border-start border-2 ps-3' : ''}">
-                        <div class="d-flex justify-content-between align-items-start">
-                            <div class="w-100">
-                                <div class="d-flex justify-content-between align-items-center">
-                                    <div>
-                                        <strong class="comment-author">${commentData.author}</strong>
-                                        <small class="text-muted ms-2">
-                                            ${commentData.created_at}${commentData.is_edited ? ' (Редактирован)' : ''}
-                                        </small>
-                                    </div>
-                                    ${commentData.is_author ? `
-                                        <div class="dropdown">
-                                            <button class="btn btn-sm btn-light dropdown-toggle" type="button" data-bs-toggle="dropdown">
-                                                <i class="bi bi-three-dots-vertical"></i>
-                                            </button>
-                                            <ul class="dropdown-menu">
-                                                <li><a class="dropdown-item edit-comment" href="#" data-comment-id="${commentData.id}" data-url="/comments/${commentData.id}/edit/">Редактировать</a></li>
-                                                <li><a class="dropdown-item text-danger delete-comment" href="#" data-comment-id="${commentData.id}" data-url="/comments/${commentData.id}/delete/">Удалить</a></li>
-                                            </ul>
-                                        </div>
-                                    ` : ''}
-                                </div>
-                                <p class="mb-1 comment-text mt-2">${commentData.text.replace(/\n/g, '<br>')}</p>
-                                ${commentData.level < 5 ? `
-                                    <button class="btn btn-sm btn-outline-primary reply-comment mt-1" 
-                                            data-comment-id="${commentData.id}" 
-                                            data-author="${commentData.author}">
-                                        <i class="bi bi-reply me-1"></i>Ответить
+    let max_steps = 5;
+    let step = 20;
+    let cycle_length = max_steps * 2;
+    let cycle_level = commentData.level % cycle_length;
+    let phase = (cycle_level >= max_steps) ? 1 : 0; // 0 для 0-4 (вправо), 1 для 5-9 (влево)
+    let indent = phase === 0 ? cycle_level * step : (cycle_length - cycle_level) * step;
+
+    return `
+        <div class="comment mb-3" data-comment-id="${commentData.id}" data-text="${commentData.text.replace(/"/g, '&quot;')}" data-level="${commentData.level}" data-phase="${phase}">
+            <div class="d-flex">
+                <div class="comment-indent" style="width: ${indent}px;"></div>
+                
+                <div class="comment-content flex-grow-1 position-relative">
+                    ${commentData.level > 0 ? '<div class="comment-connector"></div>' : ''}
+                    
+                    <div class="comment-card">
+                        <div class="comment-header d-flex justify-content-between align-items-start mb-2">
+                            <div class="d-flex align-items-center gap-2">
+                                <strong class="comment-author text-primary">${commentData.author}</strong>
+                                <small class="text-muted">
+                                    ${commentData.created_at}
+                                    ${commentData.is_edited ? '<span class="text-warning" title="Отредактирован">✎</span>' : ''}
+                                </small>
+                            </div>
+                            
+                            ${commentData.is_author ? `
+                                <div class="dropdown">
+                                    <button class="btn btn-sm btn-light dropdown-toggle comment-actions" 
+                                            type="button" data-bs-toggle="dropdown">
+                                        <i class="bi bi-three-dots"></i>
                                     </button>
-                                ` : ''}
-                            </div>
+                                    <ul class="dropdown-menu dropdown-menu-end">
+                                        <li>
+                                            <a class="dropdown-item edit-comment" href="#" 
+                                               data-comment-id="${commentData.id}" 
+                                               data-url="/comments/${commentData.id}/edit/">
+                                                <i class="bi bi-pencil me-2"></i>Редактировать
+                                            </a>
+                                        </li>
+                                        <li>
+                                            <a class="dropdown-item text-danger delete-comment" href="#" 
+                                               data-comment-id="${commentData.id}" 
+                                               data-url="/comments/${commentData.id}/delete/">
+                                                <i class="bi bi-trash me-2"></i>Удалить
+                                            </a>
+                                        </li>
+                                    </ul>
+                                </div>
+                            ` : ''}
                         </div>
-                        ${commentData.replies && commentData.replies.length > 0 ? `
-                            <div class="replies mt-3">
-                                ${commentData.replies.map(reply => createCommentHTML(reply, true)).join('')}
-                            </div>
-                        ` : ''}
+                        
+                        <div class="comment-text mb-3">
+                            ${commentData.text.replace(/\n/g, '<br>')}
+                        </div>
+                        
+                        <div class="comment-actions">
+                            <button class="btn btn-sm btn-outline-primary reply-comment" 
+                                    data-comment-id="${commentData.id}" 
+                                    data-author="${commentData.author}">
+                                <i class="bi bi-reply me-1"></i>Ответить
+                            </button>
+                        </div>
                     </div>
+                    
+                    ${commentData.replies && commentData.replies.length > 0 ? `
+                        <div class="replies mt-3">
+                            ${commentData.replies.map(reply => createCommentHTML(reply, true)).join('')}
+                        </div>
+                    ` : ''}
                 </div>
             </div>
-        `;
+        </div>
+    `;
+}
+
+    // === Управление ветками комментариев ===
+    function setupBranchManagement() {
+        document.addEventListener('click', function(e) {
+            // Сворачивание/разворачивание веток по двойному клику на заголовок
+            if (e.target.classList.contains('comment-author') || 
+                e.target.closest('.comment-author')) {
+                if (e.detail === 2) { // Двойной клик
+                    const commentCard = e.target.closest('.comment-card');
+                    const replies = commentCard.parentElement.querySelector('.replies');
+                    if (replies) {
+                        replies.style.display = replies.style.display === 'none' ? 'block' : 'none';
+                    }
+                }
+            }
+        });
     }
 
+    // Вызови при загрузке
+    document.addEventListener('DOMContentLoaded', function() {
+        setupBranchManagement();
+    });
     // === Добавление нового комментария ===
     if (commentForm) {
         commentForm.addEventListener('submit', function(e) {
@@ -338,35 +384,7 @@ document.addEventListener('DOMContentLoaded', function() {
             })
             .then(data => {
                 if (data.status === 'success') {
-                    const commentHtml = `
-                        <div class="d-flex justify-content-between align-items-start">
-                            <div class="w-100">
-                                <div class="d-flex justify-content-between">
-                                    <strong>${data.comment.author}</strong>
-                                    ${data.comment.is_author ? `
-                                        <div class="dropdown">
-                                            <button class="btn btn-sm btn-light dropdown-toggle" type="button" data-bs-toggle="dropdown">
-                                                <i class="bi bi-three-dots-vertical"></i>
-                                            </button>
-                                            <ul class="dropdown-menu">
-                                                <li><a class="dropdown-item edit-comment" href="#" data-comment-id="${data.comment.id}" data-url="/comments/${data.comment.id}/edit/">Редактировать</a></li>
-                                                <li><a class="dropdown-item text-danger delete-comment" href="#" data-comment-id="${data.comment.id}" data-url="/comments/${data.comment.id}/delete/">Удалить</a></li>
-                                            </ul>
-                                        </div>
-                                    ` : ''}
-                                </div>
-                                <small class="text-muted">${data.comment.created_at}${data.comment.is_edited ? ' (Редактирован)' : ''}</small>
-                                <p class="mb-1 comment-text">${data.comment.text.replace(/\n/g, '<br>')}</p>
-                                <button class="btn btn-sm btn-outline-secondary quote-comment mt-1" 
-                                        data-comment-id="${data.comment.id}" 
-                                        data-author="${data.comment.author}" 
-                                        data-text="${data.comment.text.replace(/"/g, '&quot;')}" 
-                                        data-date="${data.comment.created_at}">
-                                    <i class="bi bi-quote me-1"></i>Цитировать
-                                </button>
-                            </div>
-                        </div>
-                    `;
+                    const commentHtml = createCommentHTML(data.comment);
                     const commentDiv = document.querySelector(`.comment[data-comment-id="${commentId}"]`);
                     commentDiv.innerHTML = commentHtml;
                     commentDiv.setAttribute('data-text', data.comment.text.replace(/"/g, '&quot;'));
