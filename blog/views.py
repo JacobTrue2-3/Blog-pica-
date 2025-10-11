@@ -227,6 +227,7 @@ class LikeDislikePostView(LoginRequiredMixin, View):
         })
 
 # Создание комментария (обновленный)
+# Создание комментария (обновленный)
 class CommentCreateView(LoginRequiredMixin, View):
     def post(self, request, post_id):
         post = get_object_or_404(Post, id=post_id)
@@ -240,38 +241,50 @@ class CommentCreateView(LoginRequiredMixin, View):
         if parent_id:
             try:
                 parent_comment = Comment.objects.get(id=parent_id, post=post)
+                # Проверяем уровень вложенности перед созданием
+                if parent_comment.level >= 6:  # 6 потому что новый комментарий будет level + 1
+                    return JsonResponse({
+                        'status': 'error', 
+                        'message': 'Достигнут максимальный уровень вложенности комментариев (7)'
+                    }, status=400)
             except Comment.DoesNotExist:
                 return JsonResponse({'status': 'error', 'message': 'Родительский комментарий не найден'}, status=400)
         
-        comment = Comment.objects.create(
-            post=post,
-            author=request.user,
-            text=text,
-            parent=parent_comment
-        )
-        
-        # Получаем ответы для нового комментария
-        replies_data = self.get_replies_data(comment.replies.all(), request.user)
-        
-        return JsonResponse({
-            'status': 'success',
-            'comment': {
-                'id': comment.id,
-                'text': comment.text,
-                'author': comment.author.username,
-                'created_at': comment.created_at.strftime('%d.%m.%Y %H:%M'),
-                'is_edited': comment.is_edited,
-                'is_author': True,
-                'level': comment.level,
-                'parent_id': parent_comment.id if parent_comment else None,
-                'replies': replies_data
-            }
-        })
+        try:
+            comment = Comment.objects.create(
+                post=post,
+                author=request.user,
+                text=text,
+                parent=parent_comment
+            )
+            
+            # Получаем ответы для нового комментария
+            replies_data = self.get_replies_data(comment.replies.all(), request.user)
+            
+            return JsonResponse({
+                'status': 'success',
+                'comment': {
+                    'id': comment.id,
+                    'text': comment.text,
+                    'author': comment.author.username,
+                    'created_at': comment.created_at.strftime('%d.%m.%Y %H:%M'),
+                    'is_edited': comment.is_edited,
+                    'is_author': True,
+                    'level': comment.level,
+                    'parent_id': parent_comment.id if parent_comment else None,
+                    'replies': replies_data
+                }
+            })
+        except ValueError as e:
+            return JsonResponse({
+                'status': 'error', 
+                'message': str(e)
+            }, status=400)
     
     def get_replies_data(self, replies, user):
         """Рекурсивно получаем данные ответов"""
         result = []
-        for reply in replies.order_by('created_at'):  # Сортируем ответы
+        for reply in replies.order_by('created_at'):
             result.append({
                 'id': reply.id,
                 'text': reply.text,

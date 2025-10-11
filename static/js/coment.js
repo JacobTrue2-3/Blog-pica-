@@ -432,17 +432,62 @@ document.addEventListener('DOMContentLoaded', function() {
                 })
                 .then(data => {
                     if (data.status === 'success') {
-                        document.querySelector(`.comment[data-comment-id="${commentId}"]`).remove();
-                        updateCommentCount(-1);
+                        const commentHtml = createCommentHTML(data.comment);
+                        
+                        if (data.comment.parent_id) {
+                            // Находим родительский комментарий и добавляем ответ
+                            const parentComment = document.querySelector(`.comment[data-comment-id="${data.comment.parent_id}"]`);
+                            if (parentComment) {
+                                const parentContent = parentComment.querySelector('.comment-content');
+                                let repliesContainer = parentContent.querySelector('.replies');
+                                if (!repliesContainer) {
+                                    repliesContainer = document.createElement('div');
+                                    repliesContainer.className = 'replies mt-3';
+                                    parentContent.appendChild(repliesContainer);
+                                }
+                                repliesContainer.insertAdjacentHTML('beforeend', commentHtml);
+                            }
+                        } else {
+                            // Новый корневой комментарий добавляем в конец списка
+                            if (commentList) {
+                                commentList.insertAdjacentHTML('beforeend', commentHtml);
+                                
+                                // Если комментариев стало больше 5, скрываем самый старый
+                                const allComments = commentList.querySelectorAll('.comment');
+                                if (allComments.length > 5) {
+                                    // Скрываем самый первый комментарий (самый старый)
+                                    allComments[0].style.display = 'none';
+                                    
+                                    // Обновляем счетчик оставшихся комментариев
+                                    updateOlderCommentsCount(1);
+                                }
+                            } else {
+                                const newCommentList = document.createElement('div');
+                                newCommentList.id = 'comment-list';
+                                newCommentList.innerHTML = commentHtml;
+                                commentForm.parentElement.insertBefore(newCommentList, commentForm);
+                            }
+                            
+                            // Прокручиваем к новому комментарию
+                            const newComment = document.querySelector(`.comment[data-comment-id="${data.comment.id}"]`);
+                            if (newComment) {
+                                newComment.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+                            }
+                        }
+                        
+                        commentForm.reset();
+                        cancelReply();
+                        updateCommentCount(1);
                     } else {
-                        alert(data.message || 'Не удалось удалить комментарий');
+                        alert(data.message || 'Не удалось добавить комментарий');
+                        // 👇 ДОБАВЬ ЭТУ ПРОВЕРКУ ЗДЕСЬ 👇
+                        if (data.message && data.message.includes('максимальный уровень')) {
+                            cancelReply();
+                        }
                     }
                 })
-                .catch(error => {
-                    console.error('Ошибка при удалении комментария:', error);
-                    alert(`Произошла ошибка при удалении комментария: ${error.message}`);
-                });
             }
         }
     });
 });
+

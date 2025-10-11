@@ -109,6 +109,10 @@ class Comment(models.Model):
             while current:
                 self.level += 1
                 current = current.parent
+            
+            # Проверяем, не превышен ли лимит вложенности (7 уровней)
+            if self.level >= 7:
+                raise ValueError("Достигнут максимальный уровень вложенности комментариев (7)")
         else:
             self.level = 0  # Корневой комментарий
         super().save(*args, **kwargs)
